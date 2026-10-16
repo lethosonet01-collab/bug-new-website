@@ -66,6 +66,260 @@ footer { text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13px
 <footer>
     ⚡ © 2026 BUG NEW | DỊCH VỤ CỦA BUG NEW ⚡
 </footer>
+<!-- 🎃 BUG NEW HALLOWEEN EFFECTS -->
+<div id="halloween-effects" aria-hidden="true">
+    <div class="spider-web web-left">🕸️</div>
+    <div class="spider-web web-right">🕸️</div>
+    <div class="floating-pumpkin">🎃</div>
+    <div class="floating-ghost ghost-one">👻</div>
+    <div class="floating-ghost ghost-two">👻</div>
+    <div class="flying-bat bat-one">🦇</div>
+    <div class="flying-bat bat-two">🦇</div>
+    <div class="halloween-fog"></div>
+    <canvas id="halloween-particles"></canvas>
+</div>
+
+<style>
+#halloween-effects {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: hidden;
+}
+
+.spider-web {
+    position: absolute;
+    top: 0;
+    font-size: 65px;
+    opacity: .5;
+    filter: drop-shadow(0 0 8px #a855f7);
+    animation: web-glow 3s ease-in-out infinite alternate;
+}
+
+.web-left { left: 0; }
+.web-right { right: 0; transform: scaleX(-1); }
+
+.floating-pumpkin {
+    position: absolute;
+    right: 24px;
+    bottom: 100px;
+    font-size: 42px;
+    animation: pumpkin-float 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px #ff7300);
+}
+
+.floating-ghost {
+    position: absolute;
+    font-size: 32px;
+    opacity: .8;
+    filter: drop-shadow(0 0 10px #c084fc);
+    animation: ghost-float 7s ease-in-out infinite;
+}
+
+.ghost-one {
+    top: 28%;
+    left: -50px;
+    animation-name: ghost-cross;
+    animation-duration: 22s;
+}
+
+.ghost-two {
+    top: 65%;
+    right: -50px;
+    animation-name: ghost-cross-reverse;
+    animation-duration: 27s;
+}
+
+.flying-bat {
+    position: absolute;
+    font-size: 27px;
+    filter: drop-shadow(0 0 6px #a855f7);
+}
+
+.bat-one {
+    top: 18%;
+    left: -50px;
+    animation: bat-fly 16s linear infinite;
+}
+
+.bat-two {
+    top: 45%;
+    left: -50px;
+    animation: bat-fly 23s linear infinite 5s;
+}
+
+.halloween-fog {
+    position: absolute;
+    bottom: 0;
+    left: -20%;
+    width: 140%;
+    height: 75px;
+    opacity: .3;
+    background: linear-gradient(
+        0deg,
+        rgba(124, 58, 237, .35),
+        rgba(249, 115, 22, .12),
+        transparent
+    );
+    animation: fog-move 8s ease-in-out infinite alternate;
+}
+
+#halloween-particles {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+@keyframes pumpkin-float {
+    0%, 100% { transform: translateY(0) rotate(-8deg); }
+    50% { transform: translateY(-18px) rotate(8deg); }
+}
+
+@keyframes ghost-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-25px); }
+}
+
+@keyframes ghost-cross {
+    0% { left: -60px; transform: translateY(0) rotate(-8deg); }
+    50% { transform: translateY(-35px) rotate(8deg); }
+    100% { left: calc(100% + 60px); transform: translateY(0); }
+}
+
+@keyframes ghost-cross-reverse {
+    0% { right: -60px; transform: translateY(0) rotate(8deg); }
+    50% { transform: translateY(25px) rotate(-8deg); }
+    100% { right: calc(100% + 60px); transform: translateY(0); }
+}
+
+@keyframes bat-fly {
+    0% { left: -50px; transform: translateY(0) scale(1); }
+    25% { transform: translateY(-35px) scale(.8); }
+    50% { transform: translateY(15px) scale(1.1); }
+    75% { transform: translateY(-25px) scale(.9); }
+    100% { left: calc(100% + 50px); transform: translateY(0) scale(1); }
+}
+
+@keyframes web-glow {
+    from { opacity: .3; }
+    to { opacity: .7; }
+}
+
+@keyframes fog-move {
+    from { transform: translateX(-5%); }
+    to { transform: translateX(5%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #halloween-effects *,
+    #halloween-effects {
+        animation: none !important;
+    }
+}
+</style>
+
+<script>
+(() => {
+    const canvas = document.getElementById("halloween-particles");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let particles = [];
+    let frame = null;
+    let running = false;
+
+    const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+    );
+
+    function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        width = window.innerWidth;
+        height = window.innerHeight;
+
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const count = width < 600 ? 22 : 45;
+
+        particles = Array.from({ length: count }, () => ({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            size: Math.random() * 3 + 1,
+            speed: Math.random() * .7 + .2,
+            drift: Math.random() * .6 - .3,
+            phase: Math.random() * Math.PI * 2,
+            color: Math.random() > .5 ? "#fb923c" : "#c084fc"
+        }));
+    }
+
+    function draw() {
+        if (!running) return;
+
+        ctx.clearRect(0, 0, width, height);
+
+        for (const p of particles) {
+            p.phase += .025;
+            p.y -= p.speed;
+            p.x += p.drift + Math.sin(p.phase) * .35;
+
+            if (p.y < -10) {
+                p.y = height + 10;
+                p.x = Math.random() * width;
+            }
+
+            if (p.x < 0) p.x = width;
+            if (p.x > width) p.x = 0;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = .65;
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = p.color;
+            ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+        frame = requestAnimationFrame(draw);
+    }
+
+    function start() {
+        if (running || reducedMotion.matches || document.hidden) return;
+        running = true;
+        draw();
+    }
+
+    function stop() {
+        running = false;
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = null;
+    }
+
+    resize();
+    start();
+
+    window.addEventListener("resize", resize);
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stop();
+        else start();
+    });
+
+    reducedMotion.addEventListener("change", () => {
+        if (reducedMotion.matches) stop();
+        else start();
+    });
+})();
+</script>
 </body>
 </html>
 """
