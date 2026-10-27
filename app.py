@@ -104,6 +104,18 @@ header p {
     padding-left: 5px;
 }
 
+.note-box {
+    background: #1e1b4b;
+    border: 1px solid #7c3aed;
+    color: #f3e8ff;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.6;
+}
+
 .contact {
     text-align: center;
     padding: 25px 15px;
@@ -163,9 +175,19 @@ footer {
         </p>
     </section>
 
+    <!-- KHUNG LƯU Ý QUAN TRỌNG -->
+    <div class="note-box">
+        ❗ LƯU Ý: Mỗi ngày chỉ nhận tối đa 220 likes / ngày!
+    </div>
+
+    <!-- KHUNG TIÊU ĐỀ CHUNG -->
+    <section class="card" style="text-align: center;">
+        <h2 style="margin: 0; color: #67e8f9;">📋 BẢNG GIÁ BUFF LIKES</h2>
+    </section>
+
     <!-- 1. GIÁ CHUYỂN KHOẢN -->
     <section class="card">
-        <h2>📋 GIÁ CHUYỂN KHOẢN</h2>
+        <h2>🏦 GIÁ CHUYỂN KHOẢN</h2>
         <div class="price">
             <span class="likes">👍 220 Likes</span>
             <span class="money">2.000đ</span>
@@ -188,11 +210,11 @@ footer {
     <section class="card">
         <h2>💳 GIÁ THẺ ĐIỆN THOẠI (CARD)</h2>
         <div class="price">
-            <span class="likes">👍 4000 Likes</span>
+            <span class="likes">👍 4.000 Likes</span>
             <span class="money">20.000đ</span>
         </div>
         <div class="price">
-            <span class="likes">👍 10000 Likes</span>
+            <span class="likes">👍 10.000 Likes</span>
             <span class="money">50.000đ</span>
         </div>
     </section>
@@ -201,15 +223,15 @@ footer {
     <section class="card">
         <h2>🎮 GIÁ ĐỒ TRONG GAME</h2>
         <div class="price">
-            <span class="likes">👍 2000 Likes</span>
+            <span class="likes">👍 2.000 Likes</span>
             <span class="money">💎 &lt; 100</span>
         </div>
         <div class="price">
-            <span class="likes">👍 5000 Likes</span>
+            <span class="likes">👍 5.000 Likes</span>
             <span class="money">💎 &lt; 200</span>
         </div>
         <div class="price">
-            <span class="likes">👍 10000 Likes</span>
+            <span class="likes">👍 10.000 Likes</span>
             <span class="money">💎 &lt; 300</span>
         </div>
     </section>
@@ -218,25 +240,25 @@ footer {
     <section class="card">
         <h2>💎 GIÁ NẠP KIM CƯƠNG</h2>
         <div class="price">
-            <span class="likes">👍 1000 Likes</span>
+            <span class="likes">👍 1.000 Likes</span>
             <span class="money">💎 25</span>
         </div>
         <div class="price">
-            <span class="likes">👍 2000 Likes</span>
+            <span class="likes">👍 2.000 Likes</span>
             <span class="money">💎 51</span>
         </div>
         <div class="price">
-            <span class="likes">👍 5000 Likes</span>
+            <span class="likes">👍 5.000 Likes</span>
             <span class="money">💎 113</span>
         </div>
         <div class="price">
-            <span class="likes">👍 12000 Likes</span>
+            <span class="likes">👍 12.000 Likes</span>
             <span class="money">💎 283</span>
         </div>
     </section>
 
     <section class="card">
-        <h2>💳 PHƯƠNG THỨC THANH TOÁN</h2>
+        <h2>💸 PHƯƠNG THỨC THANH TOÁN</h2>
         <div class="payment">
             🏦 Chuyển khoản<br>
             💳 Thẻ điện thoại (card)<br>
