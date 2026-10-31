@@ -23,6 +23,7 @@ body {
     font-family: Arial, sans-serif;
     background: #080d19;
     color: white;
+    scroll-behavior: smooth;
 }
 
 header {
@@ -116,6 +117,65 @@ header p {
     line-height: 1.6;
 }
 
+.nav-acc-btn {
+    display: block;
+    text-align: center;
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: white;
+    padding: 15px;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    transition: 0.3s;
+}
+
+.nav-acc-btn:hover {
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+}
+
+/* HIỆU ỨNG ĐỘNG CHO KHUNG ACC & NÚT MUA */
+.acc-item {
+    background: #1c2940;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #26354e;
+    transition: all 0.3s ease;
+}
+
+.acc-item:hover {
+    transform: translateY(-4px);
+    border-color: #38bdf8;
+    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
+}
+
+@keyframes button-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.button {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    padding: 12px;
+    background: #22c55e;
+    color: #052e16;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+    animation: button-pulse 2s infinite ease-in-out;
+    transition: background 0.3s;
+}
+
+.button:hover {
+    background: #86efac;
+}
+
 .contact {
     text-align: center;
     padding: 25px 15px;
@@ -125,21 +185,6 @@ header p {
 
 .contact h2 {
     color: #67e8f9;
-}
-
-.button {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 13px 24px;
-    background: #22c55e;
-    color: #052e16;
-    text-decoration: none;
-    border-radius: 10px;
-    font-weight: bold;
-}
-
-.button:hover {
-    background: #86efac;
 }
 
 .note {
@@ -177,7 +222,7 @@ footer {
 
     <!-- KHUNG LƯU Ý QUAN TRỌNG -->
     <div class="note-box">
-        ❗ LƯU Ý: Mỗi ngày chỉ nhận tối đa 220 likes / ngày!
+        ❗ LƯU Ý: Mỗi ngày chỉ tối đa 220 likes / ngày!
     </div>
 
     <!-- KHUNG TIÊU ĐỀ CHUNG -->
@@ -257,14 +302,107 @@ footer {
         </div>
     </section>
 
-    <section class="card">
-        <h2>💸 PHƯƠNG THỨC THANH TOÁN</h2>
-        <div class="payment">
-            🏦 Chuyển khoản<br>
-            💳 Thẻ điện thoại (card)<br>
-            💵 Tiền mặt<br>
-            🎮 Đồ trong game<br>
-            💎 Kim cương
+    <!-- NÚT BẤM ĐẾN KHO ACC FF -->
+    <a href="#kho-acc-section" class="nav-acc-btn">📦 XEM KHO ACC FREE FIRE (7 ACC)</a>
+
+    <!-- MỤC KHO ACC FREE FIRE (7 ACC CÓ HIỆU ỨNG & LINK FB CÁ NHÂN) -->
+    <section class="card" id="kho-acc-section">
+        <h2 style="text-align: center; font-size: 24px; color: #38bdf8;">🔥 KHO ACC FREE FIRE 🔥</h2>
+        
+        <!-- ACC 1 -->
+        <div class="acc-item">
+            <img src="https://i.postimg.cc/rwfKhsvC/Screenshot-20261031-191554-com-dts-freefireth.jpg" alt="Acc FF 1" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #1</h3>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
+                ⭐ <strong>Level:</strong> 26<br>
+                🔐 <strong>Login:</strong> Google<br>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">15.000đ</strong>
+            </p>
+            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
+        </div>
+
+        <!-- ACC 2 -->
+        <div class="acc-item">
+            <img src="https://i.postimg.cc/28cDMWSj/Screenshot-20261031-191815-com-dts-freefireth.jpg" alt="Acc FF 2" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #2</h3>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
+                ⭐ <strong>Level:</strong> 9<br>
+                🔐 <strong>Login:</strong> Google<br>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">36.000đ</strong>
+            </p>
+            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
+        </div>
+
+        <!-- ACC 3 -->
+        <div class="acc-item">
+            <img src="https://i.postimg.cc/XqjRDNM8/Screenshot-20261031-191924-com-dts-freefireth.jpg" alt="Acc FF 3" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #3</h3>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
+                ⭐ <strong>Level:</strong> 13<br>
+                🔐 <strong>Login:</strong> Google<br>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">5.000đ</strong>
+            </p>
+            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
+        </div>
+
+        <!-- ACC 4 -->
+        <div class="acc-item">
+            <img src="https://i.postimg.cc/ncwy0t3T/Screenshot-20261031-192021-com-dts-freefireth.jpg" alt="Acc FF 4" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #4</h3>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
+                ⭐ <strong>Level:</strong> 22<br>
+                🔐 <strong>Login:</strong> Google<br>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">20.000đ</strong>
+            </p>
+            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
+        </div>
+
+        <!-- ACC 5 -->
+        <div class="acc-item">
+            <img src="https://i.postimg.cc/3w2z80YD/Screenshot-20261031-192143-com-dts-freefireth.jpg" alt="Acc FF 5" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #5</h3>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
+                ⭐ <strong>Level:</strong> 2<br>
+                🔐 <strong>Login:</strong> Google<br>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">25.000đ</strong>
+            </p>
+            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
+        </div>
+
+        <!-- ACC 6 -->
+        <div class="acc-item">
+            <img src="https://i.postimg.cc/J4tgy2RD/Screenshot-20261031-192412-com-dts-freefireth.jpg" alt="Acc FF 6" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #6</h3>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
+                ⭐ <strong>Level:</strong> 28<br>
+                🔐 <strong>Login:</strong> Facebook<br>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">30.000đ</strong>
+            </p>
+            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
+        </div>
+
+        <!-- ACC 7 -->
+        <div class="acc-item">
+            <img src="https://i.postimg.cc/JhCd27ZP/Screenshot-20261031-192920-com-dts-freefireth.jpg" alt="Acc FF 7" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #7</h3>
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
+                ⭐ <strong>Level:</strong> 14<br>
+                🔐 <strong>Login:</strong> Facebook<br>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">10.000đ</strong>
+            </p>
+            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
+        </div>
+
+        <!-- PHƯƠNG THỨC THANH TOÁN Ở DƯỚI CÙNG MỤC ACC -->
+        <div style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #26354e;">
+            <h3 style="color: #67e8f9; margin-bottom: 10px;">💳 Phương Thức Thanh Toán</h3>
+            <div class="payment">
+                🏦 Chuyển khoản<br>
+                💳 Thẻ điện thoại (card)<br>
+                💵 Tiền mặt<br>
+                🎮 Đồ trong game<br>
+                💎 Kim cương
+            </div>
         </div>
     </section>
 
@@ -273,7 +411,7 @@ footer {
         <p>👤 Facebook: <strong>Bug New</strong></p>
 
         <a class="button"
-           href="https://www.facebook.com/"
+           href="https://www.facebook.com/share/1DWZpYDE4C/"
            target="_blank"
            rel="noopener noreferrer">
            💬 LIÊN HỆ FACEBOOK
