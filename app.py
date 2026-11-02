@@ -29,7 +29,7 @@ body {
 header {
     padding: 28px 15px;
     text-align: center;
-    background: linear-gradient(135deg, #6d28d9, #0891b2);
+    background: linear-gradient(135deg, #9a3412, #ea580c);
 }
 
 header h1 {
@@ -40,7 +40,7 @@ header h1 {
 
 header p {
     margin-bottom: 0;
-    color: #e0f2fe;
+    color: #ffedd5;
 }
 
 .container {
@@ -55,7 +55,7 @@ header p {
 }
 
 .intro h2 {
-    color: #67e8f9;
+    color: #fb923c;
     font-size: 24px;
 }
 
@@ -74,7 +74,7 @@ header p {
 
 .card h2 {
     margin-top: 0;
-    color: #67e8f9;
+    color: #fb923c;
     font-size: 20px;
 }
 
@@ -106,9 +106,9 @@ header p {
 }
 
 .note-box {
-    background: #1e1b4b;
-    border: 1px solid #7c3aed;
-    color: #f3e8ff;
+    background: #431407;
+    border: 1px solid #ea580c;
+    color: #ffedd5;
     padding: 15px;
     border-radius: 12px;
     margin-bottom: 18px;
@@ -120,7 +120,7 @@ header p {
 .nav-acc-btn {
     display: block;
     text-align: center;
-    background: linear-gradient(135deg, #0284c7, #2563eb);
+    background: linear-gradient(135deg, #c2410c, #ea580c);
     color: white;
     padding: 15px;
     border-radius: 14px;
@@ -128,12 +128,12 @@ header p {
     font-weight: bold;
     text-decoration: none;
     margin-bottom: 25px;
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
     transition: 0.3s;
 }
 
 .nav-acc-btn:hover {
-    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    background: linear-gradient(135deg, #ea580c, #f97316);
 }
 
 /* HIỆU ỨNG ĐỘNG CHO KHUNG ACC & NÚT MUA */
@@ -148,8 +148,8 @@ header p {
 
 .acc-item:hover {
     transform: translateY(-4px);
-    border-color: #38bdf8;
-    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
+    border-color: #fb923c;
+    box-shadow: 0 8px 20px rgba(251, 146, 60, 0.3);
 }
 
 @keyframes button-pulse {
@@ -179,12 +179,12 @@ header p {
 .contact {
     text-align: center;
     padding: 25px 15px;
-    background: linear-gradient(135deg, #172554, #164e63);
+    background: linear-gradient(135deg, #431407, #7c2d12);
     border-radius: 16px;
 }
 
 .contact h2 {
-    color: #67e8f9;
+    color: #fb923c;
 }
 
 .note {
@@ -205,14 +205,14 @@ footer {
 <body>
 
 <header>
-    <h1>⚡ BUG NEW ⚡</h1>
+    <h1>🛍️ Shop BUG NEW 🛍️</h1>
     <p>🎮 DỊCH VỤ CỦA BUG NEW 🎮</p>
 </header>
 
 <div class="container">
 
     <section class="intro">
-        <h2>🔥 DỊCH VỤ BUFF LIKES 🔥</h2>
+        <h2>📊 DỊCH VỤ BUFF LIKES ✅</h2>
         <p>
             💎 Bảng giá dịch vụ của BUG NEW<br>
             🛒 Chọn gói phù hợp với bạn<br>
@@ -222,12 +222,12 @@ footer {
 
     <!-- KHUNG LƯU Ý QUAN TRỌNG -->
     <div class="note-box">
-        ❗ LƯU Ý: Mỗi ngày chỉ tối đa 220 likes / ngày!
+        ❗ LƯU Ý: Chỉ nhận được 220 likes/ngày!
     </div>
 
     <!-- KHUNG TIÊU ĐỀ CHUNG -->
     <section class="card" style="text-align: center;">
-        <h2 style="margin: 0; color: #67e8f9;">📋 BẢNG GIÁ BUFF LIKES</h2>
+        <h2 style="margin: 0; color: #fb923c;">📋 BẢNG GIÁ BUFF LIKES</h2>
     </section>
 
     <!-- 1. GIÁ CHUYỂN KHOẢN -->
@@ -255,11 +255,11 @@ footer {
     <section class="card">
         <h2>💳 GIÁ THẺ ĐIỆN THOẠI (CARD)</h2>
         <div class="price">
-            <span class="likes">👍 4.000 Likes</span>
+            <span class="likes">👍 4.400 Likes</span>
             <span class="money">20.000đ</span>
         </div>
         <div class="price">
-            <span class="likes">👍 10.000 Likes</span>
+            <span class="likes">👍 11.000 Likes</span>
             <span class="money">50.000đ</span>
         </div>
     </section>
@@ -268,15 +268,15 @@ footer {
     <section class="card">
         <h2>🎮 GIÁ ĐỒ TRONG GAME</h2>
         <div class="price">
-            <span class="likes">👍 2.000 Likes</span>
+            <span class="likes">👍 2.200 Likes</span>
             <span class="money">💎 &lt; 100</span>
         </div>
         <div class="price">
-            <span class="likes">👍 5.000 Likes</span>
+            <span class="likes">👍 5.500 Likes</span>
             <span class="money">💎 &lt; 200</span>
         </div>
         <div class="price">
-            <span class="likes">👍 10.000 Likes</span>
+            <span class="likes">👍 11.000 Likes</span>
             <span class="money">💎 &lt; 300</span>
         </div>
     </section>
@@ -285,117 +285,69 @@ footer {
     <section class="card">
         <h2>💎 GIÁ NẠP KIM CƯƠNG</h2>
         <div class="price">
-            <span class="likes">👍 1.000 Likes</span>
+            <span class="likes">👍 1.100 Likes</span>
             <span class="money">💎 25</span>
         </div>
         <div class="price">
-            <span class="likes">👍 2.000 Likes</span>
+            <span class="likes">👍 2.200 Likes</span>
             <span class="money">💎 51</span>
         </div>
         <div class="price">
-            <span class="likes">👍 5.000 Likes</span>
+            <span class="likes">👍 5.500 Likes</span>
             <span class="money">💎 113</span>
         </div>
         <div class="price">
-            <span class="likes">👍 12.000 Likes</span>
+            <span class="likes">👍 12.100 Likes</span>
             <span class="money">💎 283</span>
         </div>
     </section>
 
     <!-- NÚT BẤM ĐẾN KHO ACC FF -->
-    <a href="#kho-acc-section" class="nav-acc-btn">📦 XEM KHO ACC FREE FIRE (7 ACC)</a>
+    <a href="#kho-acc-section" class="nav-acc-btn">📦 XEM KHO ACC FREE FIRE (3 ACC MỚI)</a>
 
-    <!-- MỤC KHO ACC FREE FIRE (7 ACC CÓ HIỆU ỨNG & LINK FB CÁ NHÂN) -->
+    <!-- MỤC KHO ACC FREE FIRE (3 ACC MỚI CẬP NHẬT) -->
     <section class="card" id="kho-acc-section">
-        <h2 style="text-align: center; font-size: 24px; color: #38bdf8;">🔥 KHO ACC FREE FIRE 🔥</h2>
+        <h2 style="text-align: center; font-size: 24px; color: #fb923c;">🔥 KHO ACC FREE FIRE 🔥</h2>
         
-        <!-- ACC 1 -->
+        <!-- ACC 1 MỚI -->
         <div class="acc-item">
-            <img src="https://i.postimg.cc/rwfKhsvC/Screenshot-20261031-191554-com-dts-freefireth.jpg" alt="Acc FF 1" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
-            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #1</h3>
+            <img src="https://i.postimg.cc/rwBsvfSm/Screenshot-20261102-174419-com-dts-freefireth.jpg" alt="Acc FF 1" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #fb923c; margin: 5px 0;">🎮 Acc #1</h3>
             <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
-                ⭐ <strong>Level:</strong> 26<br>
-                🔐 <strong>Login:</strong> Google<br>
-                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">15.000đ</strong>
+                ⭐ <strong>Level:</strong> 34<br>
+                🔐 <strong>Login:</strong> Facebook<br>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">35.000đ</strong>
             </p>
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 2 -->
+        <!-- ACC 2 MỚI -->
         <div class="acc-item">
-            <img src="https://i.postimg.cc/28cDMWSj/Screenshot-20261031-191815-com-dts-freefireth.jpg" alt="Acc FF 2" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
-            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #2</h3>
+            <img src="https://i.postimg.cc/3R7RwWS6/Screenshot-20261102-174720-com-dts-freefireth.jpg" alt="Acc FF 2" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #fb923c; margin: 5px 0;">🎮 Acc #2</h3>
             <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
-                ⭐ <strong>Level:</strong> 9<br>
-                🔐 <strong>Login:</strong> Google<br>
-                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">36.000đ</strong>
-            </p>
-            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-        </div>
-
-        <!-- ACC 3 -->
-        <div class="acc-item">
-            <img src="https://i.postimg.cc/XqjRDNM8/Screenshot-20261031-191924-com-dts-freefireth.jpg" alt="Acc FF 3" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
-            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #3</h3>
-            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
-                ⭐ <strong>Level:</strong> 13<br>
-                🔐 <strong>Login:</strong> Google<br>
-                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">5.000đ</strong>
-            </p>
-            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-        </div>
-
-        <!-- ACC 4 -->
-        <div class="acc-item">
-            <img src="https://i.postimg.cc/ncwy0t3T/Screenshot-20261031-192021-com-dts-freefireth.jpg" alt="Acc FF 4" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
-            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #4</h3>
-            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
-                ⭐ <strong>Level:</strong> 22<br>
-                🔐 <strong>Login:</strong> Google<br>
+                ⭐ <strong>Level:</strong> 21<br>
+                🔐 <strong>Login:</strong> Facebook<br>
                 💰 <strong>Giá:</strong> <strong style="color: #4ade80;">20.000đ</strong>
             </p>
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 5 -->
+        <!-- ACC 3 MỚI -->
         <div class="acc-item">
-            <img src="https://i.postimg.cc/3w2z80YD/Screenshot-20261031-192143-com-dts-freefireth.jpg" alt="Acc FF 5" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
-            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #5</h3>
+            <img src="https://i.postimg.cc/3NxxgVHC/Screenshot-20261102-174849-com-dts-freefireth.jpg" alt="Acc FF 3" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <h3 style="color: #fb923c; margin: 5px 0;">🎮 Acc #3</h3>
             <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
-                ⭐ <strong>Level:</strong> 2<br>
-                🔐 <strong>Login:</strong> Google<br>
-                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">25.000đ</strong>
-            </p>
-            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-        </div>
-
-        <!-- ACC 6 -->
-        <div class="acc-item">
-            <img src="https://i.postimg.cc/J4tgy2RD/Screenshot-20261031-192412-com-dts-freefireth.jpg" alt="Acc FF 6" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
-            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #6</h3>
-            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
-                ⭐ <strong>Level:</strong> 28<br>
+                ⭐ <strong>Level:</strong> 18<br>
                 🔐 <strong>Login:</strong> Facebook<br>
-                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">30.000đ</strong>
-            </p>
-            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-        </div>
-
-        <!-- ACC 7 -->
-        <div class="acc-item">
-            <img src="https://i.postimg.cc/JhCd27ZP/Screenshot-20261031-192920-com-dts-freefireth.jpg" alt="Acc FF 7" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
-            <h3 style="color: #67e8f9; margin: 5px 0;">🎮 Acc #7</h3>
-            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">
-                ⭐ <strong>Level:</strong> 14<br>
-                🔐 <strong>Login:</strong> Facebook<br>
-                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">10.000đ</strong>
+                💰 <strong>Giá:</strong> <strong style="color: #4ade80;">15.000đ</strong>
             </p>
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
         <!-- PHƯƠNG THỨC THANH TOÁN Ở DƯỚI CÙNG MỤC ACC -->
         <div style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #26354e;">
-            <h3 style="color: #67e8f9; margin-bottom: 10px;">💳 Phương Thức Thanh Toán</h3>
+            <h3 style="color: #fb923c; margin-bottom: 10px;">💳 Phương Thức Thanh Toán</h3>
             <div class="payment">
                 🏦 Chuyển khoản<br>
                 💳 Thẻ điện thoại (card)<br>
@@ -425,24 +377,21 @@ footer {
 </div>
 
 <footer>
-    ⚡ © 2026 BUG NEW | DỊCH VỤ CỦA BUG NEW ⚡
+    🔰 © 2026 Bug New | DỊCH VỤ GAME FREE FIRE 🔰
 </footer>
 
-<!-- 🎃 BUG NEW HALLOWEEN EFFECTS -->
-<div id="halloween-effects" aria-hidden="true">
-    <div class="spider-web web-left">🕸️</div>
-    <div class="spider-web web-right">🕸️</div>
-    <div class="floating-pumpkin">🎃</div>
-    <div class="floating-ghost ghost-one">👻</div>
-    <div class="floating-ghost ghost-two">👻</div>
-    <div class="flying-bat bat-one">🦇</div>
-    <div class="flying-bat bat-two">🦇</div>
-    <div class="halloween-fog"></div>
-    <canvas id="halloween-particles"></canvas>
+<!-- 🔥 BUG NEW FIRE / BATTLE ROYALE EFFECTS -->
+<div id="fire-effects" aria-hidden="true">
+    <div class="floating-flame flame-one">🔥</div>
+    <div class="floating-flame flame-two">🔥</div>
+    <div class="floating-spark spark-one">✨</div>
+    <div class="floating-spark spark-two">💥</div>
+    <div class="fire-glow"></div>
+    <canvas id="fire-particles"></canvas>
 </div>
 
 <style>
-#halloween-effects {
+#fire-effects {
     position: fixed;
     inset: 0;
     pointer-events: none;
@@ -450,132 +399,98 @@ footer {
     overflow: hidden;
 }
 
-.spider-web {
-    position: absolute;
-    top: 0;
-    font-size: 65px;
-    opacity: .5;
-    filter: drop-shadow(0 0 8px #a855f7);
-    animation: web-glow 3s ease-in-out infinite alternate;
-}
-
-.web-left { left: 0; }
-.web-right { right: 0; transform: scaleX(-1); }
-
-.floating-pumpkin {
-    position: absolute;
-    right: 24px;
-    bottom: 100px;
-    font-size: 42px;
-    animation: pumpkin-float 3s ease-in-out infinite;
-    filter: drop-shadow(0 0 12px #ff7300);
-}
-
-.floating-ghost {
+.floating-flame {
     position: absolute;
     font-size: 32px;
-    opacity: .8;
-    filter: drop-shadow(0 0 10px #c084fc);
-    animation: ghost-float 7s ease-in-out infinite;
+    animation: flame-float 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px #f97316);
 }
 
-.ghost-one {
-    top: 28%;
-    left: -50px;
-    animation-name: ghost-cross;
+.flame-one {
+    bottom: 20px;
+    left: 20px;
+    animation-duration: 3.5s;
+}
+
+.flame-two {
+    bottom: 40px;
+    right: 20px;
+    animation-duration: 4.5s;
+}
+
+.floating-spark {
+    position: absolute;
+    font-size: 24px;
+    animation: spark-float 5s linear infinite;
+    filter: drop-shadow(0 0 8px #fbbf24);
+}
+
+.spark-one {
+    top: 20%;
+    left: -30px;
+    animation-name: spark-cross;
+    animation-duration: 18s;
+}
+
+.spark-two {
+    top: 60%;
+    right: -30px;
+    animation-name: spark-cross-reverse;
     animation-duration: 22s;
 }
 
-.ghost-two {
-    top: 65%;
-    right: -50px;
-    animation-name: ghost-cross-reverse;
-    animation-duration: 27s;
-}
-
-.flying-bat {
-    position: absolute;
-    font-size: 27px;
-    filter: drop-shadow(0 0 6px #a855f7);
-}
-
-.bat-one {
-    top: 18%;
-    left: -50px;
-    animation: bat-fly 16s linear infinite;
-}
-
-.bat-two {
-    top: 45%;
-    left: -50px;
-    animation: bat-fly 23s linear infinite 5s;
-}
-
-.halloween-fog {
+.fire-glow {
     position: absolute;
     bottom: 0;
-    left: -20%;
-    width: 140%;
-    height: 75px;
-    opacity: .3;
+    left: -10%;
+    width: 120%;
+    height: 60px;
+    opacity: .25;
     background: linear-gradient(
         0deg,
-        rgba(124, 58, 237, .35),
-        rgba(249, 115, 22, .12),
+        rgba(234, 88, 12, .4),
+        rgba(251, 191, 36, .1),
         transparent
     );
-    animation: fog-move 8s ease-in-out infinite alternate;
+    animation: glow-pulse 3s ease-in-out infinite alternate;
 }
 
-#halloween-particles {
+#fire-particles {
     width: 100%;
     height: 100%;
     display: block;
 }
 
-@keyframes pumpkin-float {
-    0%, 100% { transform: translateY(0) rotate(-8deg); }
-    50% { transform: translateY(-18px) rotate(8deg); }
+@keyframes flame-float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-12px) scale(1.1); }
 }
 
-@keyframes ghost-float {
+@keyframes spark-float {
     0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+@keyframes spark-cross {
+    0% { left: -40px; transform: translateY(0); }
     50% { transform: translateY(-25px); }
+    100% { left: calc(100% + 40px); transform: translateY(0); }
 }
 
-@keyframes ghost-cross {
-    0% { left: -60px; transform: translateY(0) rotate(-8deg); }
-    50% { transform: translateY(-35px) rotate(8deg); }
-    100% { left: calc(100% + 60px); transform: translateY(0); }
+@keyframes spark-cross-reverse {
+    0% { right: -40px; transform: translateY(0); }
+    50% { transform: translateY(20px); }
+    100% { right: calc(100% + 40px); transform: translateY(0); }
 }
 
-@keyframes ghost-cross-reverse {
-    0% { right: -60px; transform: translateY(0) rotate(8deg); }
-    50% { transform: translateY(25px) rotate(-8deg); }
-    100% { right: calc(100% + 60px); transform: translateY(0); }
-}
-
-@keyframes bat-fly {
-    0% { left: -50px; transform: translateY(0) scale(1); }
-    25% { transform: translateY(-35px) scale(.8); }
-    50% { transform: translateY(15px) scale(1.1); }
-    75% { transform: translateY(-25px) scale(.9); }
-    100% { left: calc(100% + 50px); transform: translateY(0) scale(1); }
-}
-
-@keyframes web-glow {
-    from { opacity: .3; }
-    to { opacity: .7; }
-}
-
-@keyframes fog-move {
-    from { transform: translateX(-5%); }
-    to { transform: translateX(5%); }
+@keyframes glow-pulse {
+    from { opacity: .15; }
+    to { opacity: .35; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    #halloween-effects *,
-    #halloween-effects {
+    #fire-effects *,
+    #fire-effects {
         animation: none !important;
     }
 }
@@ -583,7 +498,7 @@ footer {
 
 <script>
 (() => {
-    const canvas = document.getElementById("halloween-particles");
+    const canvas = document.getElementById("fire-particles");
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
@@ -609,16 +524,16 @@ footer {
         canvas.height = height * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        const count = width < 600 ? 22 : 45;
+        const count = width < 600 ? 20 : 40;
 
         particles = Array.from({ length: count }, () => ({
             x: Math.random() * width,
             y: Math.random() * height,
-            size: Math.random() * 3 + 1,
-            speed: Math.random() * .7 + .2,
-            drift: Math.random() * .6 - .3,
+            size: Math.random() * 2.5 + 0.8,
+            speed: Math.random() * 0.8 + 0.3,
+            drift: Math.random() * 0.5 - 0.25,
             phase: Math.random() * Math.PI * 2,
-            color: Math.random() > .5 ? "#fb923c" : "#c084fc"
+            color: Math.random() > 0.4 ? "#f97316" : "#fbbf24"
         }));
     }
 
@@ -628,9 +543,9 @@ footer {
         ctx.clearRect(0, 0, width, height);
 
         for (const p of particles) {
-            p.phase += .025;
+            p.phase += 0.03;
             p.y -= p.speed;
-            p.x += p.drift + Math.sin(p.phase) * .35;
+            p.x += p.drift + Math.sin(p.phase) * 0.4;
 
             if (p.y < -10) {
                 p.y = height + 10;
@@ -643,8 +558,8 @@ footer {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fillStyle = p.color;
-            ctx.globalAlpha = .65;
-            ctx.shadowBlur = 12;
+            ctx.globalAlpha = 0.7;
+            ctx.shadowBlur = 10;
             ctx.shadowColor = p.color;
             ctx.fill();
         }
