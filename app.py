@@ -5,48 +5,62 @@ app.secret_key = "bug_new_secret_key_secure"
 
 users_db = {"bugnew": "bugnewff.01"}
 
-# Giao diện dùng chung cho Login/Register
-COMMON_STYLE = """
+LOGIN_REGISTER_STYLE = """
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: Arial, sans-serif; background: #080d19; color: white; scroll-behavior: smooth; }
-header { padding: 28px 15px; text-align: center; background: linear-gradient(135deg, #1d4ed8, #0284c7); position: relative; }
-header h1 { margin: 0; font-size: 27px; font-weight: 900; }
+body { margin: 0; font-family: Arial, sans-serif; background: #050814; color: white; overflow-x: hidden; }
+header { padding: 28px 15px; text-align: center; background: linear-gradient(135deg, #1d4ed8, #0284c7); position: relative; z-index: 10; }
+header h1 { margin: 0; font-size: 27px; font-weight: 900; text-shadow: 0 0 10px #38bdf8; }
 header p { margin-bottom: 0; color: #e0f2fe; }
-.container { max-width: 650px; margin: auto; padding: 20px 15px; }
-.card { background: #131d30; border: 1px solid #1e3a8a; border-radius: 16px; padding: 20px; margin-bottom: 18px; }
-.card h2 { margin-top: 0; color: #38bdf8; font-size: 20px; text-align: center; }
+.container { max-width: 650px; margin: auto; padding: 20px 15px; position: relative; z-index: 10; }
+.card { background: rgba(19, 29, 48, 0.85); backdrop-filter: blur(10px); border: 1px solid #38bdf8; border-radius: 16px; padding: 20px; margin-bottom: 18px; box-shadow: 0 0 20px rgba(2, 132, 199, 0.3); }
+.card h2 { margin-top: 0; color: #38bdf8; font-size: 20px; text-align: center; text-shadow: 0 0 8px rgba(56,189,248,0.5); }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 5px; color: #38bdf8; font-weight: bold; }
-.form-control { width: 100%; padding: 12px; background: #1c2940; border: 1px solid #1e3a8a; border-radius: 10px; color: white; font-size: 16px; }
-.form-control:focus { outline: none; border-color: #38bdf8; }
-.btn { display: block; width: 100%; text-align: center; padding: 14px; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.3s; }
-.btn:hover { background: linear-gradient(135deg, #0ea5e9, #3b82f6); }
+.form-control { width: 100%; padding: 12px; background: #0b1326; border: 1px solid #1e3a8a; border-radius: 10px; color: white; font-size: 16px; }
+.form-control:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 10px rgba(56,189,248,0.5); }
+.btn { display: block; width: 100%; text-align: center; padding: 14px; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.3s; box-shadow: 0 0 15px rgba(37,99,235,0.5); }
+.btn:hover { background: linear-gradient(135deg, #0ea5e9, #3b82f6); box-shadow: 0 0 25px rgba(56,189,248,0.8); }
 .error-msg { background: #450a0a; border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; }
 .success-msg { background: #064e3b; border: 1px solid #10b981; color: #6ee7b7; padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; }
 .switch-link { text-align: center; margin-top: 15px; color: #94a3b8; font-size: 14px; }
 .switch-link a { color: #38bdf8; text-decoration: none; font-weight: bold; }
 .switch-link a:hover { text-decoration: underline; }
-.user-badge { position: absolute; top: 10px; right: 15px; background: rgba(0, 0, 0, 0.3); padding: 6px 12px; border-radius: 20px; font-size: 13px; border: 1px solid rgba(255, 255, 255, 0.2); }
-.user-badge a { color: #f87171; text-decoration: none; margin-left: 8px; font-weight: bold; }
-.intro { text-align: center; padding: 18px 5px; }
-.intro h2 { color: #38bdf8; font-size: 24px; }
-.intro p { color: #cbd5e1; line-height: 1.7; }
-.price { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 15px 12px; margin: 10px 0; background: #1c2940; border-radius: 10px; }
-.likes { font-weight: bold; }
-.money { color: #4ade80; font-weight: bold; white-space: nowrap; }
-.payment { color: #e2e8f0; line-height: 2; padding-left: 5px; }
-.note-box { background: #0c4a6e; border: 1px solid #0284c7; color: #e0f2fe; padding: 15px; border-radius: 12px; margin-bottom: 18px; font-weight: bold; text-align: center; line-height: 1.6; }
-.nav-acc-btn { display: block; text-align: center; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; padding: 15px; border-radius: 14px; font-size: 18px; font-weight: bold; text-decoration: none; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); }
-.acc-item { background: #1c2940; border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid #1e3a8a; }
-.button { display: block; text-align: center; margin-top: 12px; padding: 12px; background: #22c55e; color: #052e16; text-decoration: none; border-radius: 10px; font-weight: bold; }
-.contact { text-align: center; padding: 25px 15px; background: linear-gradient(135deg, #082f49, #0369a1); border-radius: 16px; }
-.contact h2 { color: #38bdf8; }
-.note { color: #cbd5e1; font-size: 13px; line-height: 1.6; }
-footer { text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13px; }
+#matrix-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.25; }
 </style>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'matrix-canvas';
+    document.body.prepend(canvas);
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    const letters = '01BUGNEWFF';
+    const fontSize = 14;
+    const columns = width / fontSize;
+    const drops = Array.from({length: columns}, () => 1);
+    function draw() {
+        ctx.fillStyle = 'rgba(5, 8, 20, 0.05)';
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = fontSize + 'px monospace';
+        for(let i = 0; i < drops.length; i++) {
+            const text = letters.charAt(Math.floor(Math.random() * letters.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if(drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        }
+    }
+    setInterval(draw, 33);
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+});
+</script>
 """
 
 
@@ -67,7 +81,7 @@ def login():
       """
     <!DOCTYPE html>
     <html lang="vi">
-    <head><title>ĐĂNG NHẬP - BUG NEW</title>{{ common_style | safe }}</head>
+    <head><title>ĐĂNG NHẬP - BUG NEW</title>{{ style | safe }}</head>
     <body>
     <header><h1>🛍️ SHOP BUG NEW 🛍️</h1><p>🔐 CỔNG ĐĂNG NHẬP HỆ THỐNG</p></header>
     <div class="container" style="margin-top: 40px;">
@@ -86,7 +100,7 @@ def login():
     </body>
     </html>
     """,
-      common_style=COMMON_STYLE,
+      style=LOGIN_REGISTER_STYLE,
       success=success,
       error=error,
   )
@@ -117,7 +131,7 @@ def register():
       """
     <!DOCTYPE html>
     <html lang="vi">
-    <head><title>ĐĂNG KÝ - BUG NEW</title>{{ common_style | safe }}</head>
+    <head><title>ĐĂNG KÝ - BUG NEW</title>{{ style | safe }}</head>
     <body>
     <header><h1>🛍️ SHOP BUG NEW 🛍️</h1><p>📝 TẠO TÀI KHOẢN MỚI</p></header>
     <div class="container" style="margin-top: 30px;">
@@ -135,7 +149,7 @@ def register():
     </body>
     </html>
     """,
-      common_style=COMMON_STYLE,
+      style=LOGIN_REGISTER_STYLE,
       error=error,
   )
 
@@ -144,6 +158,74 @@ def register():
 def logout():
   session.pop("user", None)
   return redirect(url_for("login"))
+    HOME_STYLE = """
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; background: #050814; color: white; scroll-behavior: smooth; overflow-x: hidden; }
+header { padding: 28px 15px; text-align: center; background: linear-gradient(135deg, #1d4ed8, #0284c7); position: relative; z-index: 10; box-shadow: 0 5px 20px rgba(2, 132, 199, 0.4); }
+header h1 { margin: 0; font-size: 27px; font-weight: 900; text-shadow: 0 0 10px #fff; }
+header p { margin-bottom: 0; color: #e0f2fe; }
+.user-badge { position: absolute; top: 10px; right: 15px; background: rgba(0, 0, 0, 0.4); padding: 6px 12px; border-radius: 20px; font-size: 13px; border: 1px solid rgba(56, 189, 248, 0.4); }
+.user-badge a { color: #f87171; text-decoration: none; margin-left: 8px; font-weight: bold; }
+.container { max-width: 650px; margin: auto; padding: 20px 15px; position: relative; z-index: 10; }
+.intro { text-align: center; padding: 18px 5px; }
+.intro h2 { color: #38bdf8; font-size: 24px; text-shadow: 0 0 10px rgba(56,189,248,0.5); }
+.intro p { color: #cbd5e1; line-height: 1.7; }
+.card { background: rgba(19, 29, 48, 0.9); backdrop-filter: blur(8px); border: 1px solid #1e3a8a; border-radius: 16px; padding: 20px; margin-bottom: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: 0.3s; }
+.card:hover { border-color: #38bdf8; box-shadow: 0 0 20px rgba(56,189,248,0.3); }
+.card h2 { margin-top: 0; color: #38bdf8; font-size: 20px; }
+.price { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 15px 12px; margin: 10px 0; background: #0b1326; border-radius: 10px; border: 1px solid #172554; }
+.likes { font-weight: bold; }
+.money { color: #4ade80; font-weight: bold; white-space: nowrap; text-shadow: 0 0 8px rgba(74,222,128,0.4); }
+.payment { color: #e2e8f0; line-height: 2; padding-left: 5px; }
+.note-box { background: linear-gradient(135deg, #0c4a6e, #0369a1); border: 1px solid #38bdf8; color: #e0f2fe; padding: 15px; border-radius: 12px; margin-bottom: 18px; font-weight: bold; text-align: center; line-height: 1.6; box-shadow: 0 0 15px rgba(2, 132, 199, 0.4); }
+.nav-acc-btn { display: block; text-align: center; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; padding: 15px; border-radius: 14px; font-size: 18px; font-weight: bold; text-decoration: none; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.6); transition: 0.3s; }
+.nav-acc-btn:hover { background: linear-gradient(135deg, #0ea5e9, #3b82f6); box-shadow: 0 0 30px rgba(56,189,248,0.8); }
+.acc-item { background: #0b1326; border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid #1e3a8a; transition: all 0.3s ease; }
+.acc-item:hover { transform: translateY(-4px); border-color: #38bdf8; box-shadow: 0 8px 25px rgba(56, 189, 248, 0.4); }
+@keyframes button-pulse { 0% { transform: scale(1); box-shadow: 0 0 10px rgba(34,197,94,0.4); } 50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(34,197,94,0.8); } 100% { transform: scale(1); box-shadow: 0 0 10px rgba(34,197,94,0.4); } }
+.button { display: block; text-align: center; margin-top: 12px; padding: 12px; background: #22c55e; color: #052e16; text-decoration: none; border-radius: 10px; font-weight: bold; animation: button-pulse 2s infinite ease-in-out; transition: background 0.3s; }
+.button:hover { background: #86efac; }
+.contact { text-align: center; padding: 25px 15px; background: linear-gradient(135deg, #082f49, #0369a1); border-radius: 16px; border: 1px solid #38bdf8; box-shadow: 0 0 20px rgba(2, 132, 199, 0.3); }
+.contact h2 { color: #38bdf8; }
+.note { color: #cbd5e1; font-size: 13px; line-height: 1.6; }
+footer { text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13px; }
+#cyber-stream-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.2; }
+</style>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'cyber-stream-canvas';
+    document.body.prepend(canvas);
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    const symbols = '⚡💎BUGNEW01<>+*';
+    const fontSize = 16;
+    const columns = width / fontSize;
+    const drops = Array.from({length: columns}, () => Math.floor(Math.random() * height));
+    function draw() {
+        ctx.fillStyle = 'rgba(5, 8, 20, 0.1)';
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = '#0ea5e9';
+        ctx.font = fontSize + 'px monospace';
+        for(let i = 0; i < drops.length; i++) {
+            const text = symbols.charAt(Math.floor(Math.random() * symbols.length));
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if(drops[i] * fontSize > height && Math.random() > 0.95) drops[i] = 0;
+            drops[i]++;
+        }
+    }
+    setInterval(draw, 30);
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+});
+</script>
+"""
 
 
 @app.route("/")
@@ -156,7 +238,7 @@ def home():
       """
     <!DOCTYPE html>
     <html lang="vi">
-    <head><title>DỊCH VỤ LIKES CỦA BUG NEW</title>{{ common_style | safe }}</head>
+    <head><title>DỊCH VỤ LIKES CỦA BUG NEW</title>{{ style | safe }}</head>
     <body>
     <header>
         <div class="user-badge">👤 <b>{{ current_user }}</b> | <a href="/logout">Đăng xuất</a></div>
@@ -279,15 +361,14 @@ def home():
             <p class="note">Nhấn nút để mở Facebook, sau đó tìm tài khoản Bug New.</p>
         </section>
     </div>
-    <footer>🇱🇸 © Bug New | DỊCH VỤ CỦA BUG NEW 🇱🇸</footer>
+    <footer>🤴 © Admin Bug New | Mua thì liên hệ ☎️</footer>
     </body>
     </html>
     """,
-      common_style=COMMON_STYLE,
+      style=HOME_STYLE,
       current_user=current_user,
   )
 
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=5000)
-    
