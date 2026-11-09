@@ -1,13 +1,12 @@
 from flask import Flask, redirect, render_template_string, request, session, url_for
 
 app = Flask(__name__)
-app.secret_key = "bug_new_secret_key_secure"  # Khóa bí mật dùng để quản lý phiên đăng nhập
+app.secret_key = "bug_new_secret_key_secure"
 
-# Cơ sở dữ liệu giả lập trong bộ nhớ (Lưu tài khoản đăng ký)
-# Mặc định có sẵn 1 tài khoản mẫu: bugnew / bugnewff.01
+# Cơ sở dữ liệu giả lập tài khoản
 users_db = {"bugnew": "bugnewff.01"}
 
-# --- GIAO DIỆN HTML & CSS CHUNG ---
+# Giao diện CSS chung cho trang Đăng nhập / Đăng ký
 COMMON_STYLE = """
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,7 +72,6 @@ header p { margin-bottom: 0; color: #e0f2fe; }
 """
 
 
-# --- TRANG ĐĂNG NHẬP ---
 @app.route("/login", methods=["GET", "POST"])
 def login():
   error = None
@@ -101,20 +99,18 @@ def login():
     </head>
     <body>
     <header>
-        <h1>🔰 BUG NEW 🔰</h1>
+        <h1>🛍️ SHOP BUG NEW 🛍️</h1>
         <p>🔐 CỔNG ĐĂNG NHẬP HỆ THỐNG</p>
     </header>
     <div class="container" style="margin-top: 40px;">
         <div class="card">
             <h2>🔑 ĐĂNG NHẬP TÀI KHOẢN</h2>
-            
             """
       + (f'<div class="success-msg">{success}</div>' if success else "")
       + """
             """
       + (f'<div class="error-msg">{error}</div>' if error else "")
       + """
-            
             <form method="POST">
                 <div class="form-group">
                     <label>Tên tài khoản:</label>
@@ -126,7 +122,6 @@ def login():
                 </div>
                 <button type="submit" class="btn">🚀 ĐĂNG NHẬP</button>
             </form>
-            
             <div class="switch-link">
                 Chưa có tài khoản? <a href="/register">Đăng ký ngay</a>
             </div>
@@ -138,7 +133,6 @@ def login():
   )
 
 
-# --- TRANG ĐĂNG KÝ ---
 @app.route("/register", methods=["GET", "POST"])
 def register():
   error = None
@@ -147,7 +141,6 @@ def register():
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "").strip()
 
-    # Kiểm tra điều kiện tên tài khoản: chỉ chữ thường, không dấu, không khoảng trắng, không ký tự đặc biệt
     if not username.islower() or not username.isalnum():
       error = (
           "Tên tài khoản chỉ được phép viết chữ thường, không dấu, không khoảng"
@@ -175,17 +168,15 @@ def register():
     </head>
     <body>
     <header>
-        <h1>🔰 BUG NEW 🔰</h1>
+        <h1>🛍️ SHOP BUG NEW 🛍️</h1>
         <p>📝 TẠO TÀI KHOẢN MỚI</p>
     </header>
     <div class="container" style="margin-top: 30px;">
         <div class="card">
             <h2>➕ ĐĂNG KÝ TÀI KHOẢN</h2>
-            
             """
       + (f'<div class="error-msg">{error}</div>' if error else "")
       + """
-            
             <form method="POST">
                 <div class="form-group">
                     <label>Tên tài khoản (Chỉ viết thường, không dấu, không cách):</label>
@@ -197,7 +188,6 @@ def register():
                 </div>
                 <button type="submit" class="btn">✨ ĐĂNG KÝ NGAY</button>
             </form>
-            
             <div class="switch-link">
                 Đã có tài khoản? <a href="/login">Đăng nhập ngay</a>
             </div>
@@ -209,17 +199,14 @@ def register():
   )
 
 
-# --- ĐĂNG XUẤT ---
 @app.route("/logout")
 def logout():
   session.pop("user", None)
   return redirect(url_for("login"))
 
 
-# --- TRANG CHÍNH (BẢO VỆ BỞI ĐĂNG NHẬP) ---
 @app.route("/")
 def home():
-  # Nếu chưa đăng nhập, tự động đá về trang login
   if "user" not in session:
     return redirect(url_for("login"))
 
@@ -232,7 +219,6 @@ def home():
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DỊCH VỤ LIKES CỦA BUG NEW</title>
-
 <style>
 * {{ box-sizing: border-box; }}
 body {{
@@ -355,19 +341,17 @@ header p {{ margin-bottom: 0; color: #e0f2fe; }}
 footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13px; }}
 </style>
 </head>
-
 <body>
 
 <header>
     <div class="user-badge">
         👤 <b>{current_user}</b> | <a href="/logout">Đăng xuất</a>
     </div>
-    <h1>🛍️SHOP BUG NEW 🛍️</h1>
+    <h1>🛍️ SHOP BUG NEW 🛍️</h1>
     <p>🎮 TẤT CẢ DỊCH VỤ GAME FF 🎮</p>
 </header>
 
 <div class="container">
-
     <section class="intro">
         <h2>🔥 DỊCH VỤ BUFF LIKES 🔥</h2>
         <p>
@@ -377,17 +361,14 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
         </p>
     </section>
 
-    <!-- KHUNG LƯU Ý QUAN TRỌNG -->
     <div class="note-box">
         ❗ LƯU Ý: Mỗi ngày chỉ tối đa 220 likes / ngày!
     </div>
 
-    <!-- KHUNG TIÊU ĐỀ CHUNG -->
     <section class="card" style="text-align: center;">
         <h2 style="margin: 0; color: #38bdf8;">📋 BẢNG GIÁ BUFF LIKES</h2>
     </section>
 
-    <!-- 1. GIÁ CHUYỂN KHOẢN -->
     <section class="card">
         <h2>🏦 GIÁ CHUYỂN KHOẢN</h2>
         <div class="price"><span class="likes">👍 220 Likes</span><span class="money">2.000đ</span></div>
@@ -396,14 +377,12 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
         <div class="price"><span class="likes">👍 8.800 Likes</span><span class="money">20.000đ</span></div>
     </section>
 
-    <!-- 2. GIÁ THẺ ĐIỆN THOẠI (CARD) -->
     <section class="card">
         <h2>💳 GIÁ THẺ ĐIỆN THOẠI (CARD)</h2>
         <div class="price"><span class="likes">👍 4.000 Likes</span><span class="money">20.000đ</span></div>
         <div class="price"><span class="likes">👍 10.000 Likes</span><span class="money">50.000đ</span></div>
     </section>
 
-    <!-- 3. GIÁ ĐỒ TRONG GAME -->
     <section class="card">
         <h2>🎮 GIÁ ĐỒ TRONG GAME</h2>
         <div class="price"><span class="likes">👍 2.000 Likes</span><span class="money">💎 &lt; 100</span></div>
@@ -411,7 +390,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
         <div class="price"><span class="likes">👍 10.000 Likes</span><span class="money">💎 &lt; 300</span></div>
     </section>
 
-    <!-- 4. GIÁ NẠP KIM CƯƠNG -->
     <section class="card">
         <h2>💎 GIÁ NẠP KIM CƯƠNG</h2>
         <div class="price"><span class="likes">👍 1.000 Likes</span><span class="money">💎 25</span></div>
@@ -420,14 +398,11 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
         <div class="price"><span class="likes">👍 12.000 Likes</span><span class="money">💎 283</span></div>
     </section>
 
-    <!-- NÚT BẤM ĐẾN KHO ACC FF -->
     <a href="#kho-acc-section" class="nav-acc-btn">📦 XEM KHO ACC FREE FIRE (10 ACC)</a>
 
-    <!-- MỤC KHO ACC FREE FIRE (ĐỦ 10 ACC) -->
     <section class="card" id="kho-acc-section">
         <h2 style="text-align: center; font-size: 24px; color: #38bdf8;">🔥 KHO ACC FREE FIRE 🔥</h2>
         
-        <!-- ACC 1 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/rwBsvfSm/Screenshot-20261102-174419-com-dts-freefireth.jpg" alt="Acc 1" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #1</h3>
@@ -435,7 +410,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 2 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/3R7RwWS6/Screenshot-20261102-174720-com-dts-freefireth.jpg" alt="Acc 2" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #2</h3>
@@ -443,7 +417,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 3 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/3NxxgVHC/Screenshot-20261102-174849-com-dts-freefireth.jpg" alt="Acc 3" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #3</h3>
@@ -451,7 +424,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 4 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/rwfKhsvC/Screenshot-20261031-191554-com-dts-freefireth.jpg" alt="Acc 4" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #4</h3>
@@ -459,7 +431,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 5 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/28cDMWSj/Screenshot-20261031-191815-com-dts-freefireth.jpg" alt="Acc 5" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #5</h3>
@@ -467,7 +438,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 6 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/XqjRDNM8/Screenshot-20261031-191924-com-dts-freefireth.jpg" alt="Acc 6" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #6</h3>
@@ -475,7 +445,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 7 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/ncwy0t3T/Screenshot-20261031-192021-com-dts-freefireth.jpg" alt="Acc 7" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #7</h3>
@@ -483,7 +452,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 8 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/3w2z80YD/Screenshot-20261031-192143-com-dts-freefireth.jpg" alt="Acc 8" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #8</h3>
@@ -491,7 +459,6 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 9 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/J4tgy2RD/Screenshot-20261031-192412-com-dts-freefireth.jpg" alt="Acc 9" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #9</h3>
@@ -499,8 +466,22 @@ footer {{ text-align: center; padding: 25px 12px; color: #94a3b8; font-size: 13p
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
         </div>
 
-        <!-- ACC 10 -->
         <div class="acc-item">
             <img src="https://i.postimg.cc/JhCd27ZP/Screenshot-20261031-192920-com-dts-freefireth.jpg" alt="Acc 10" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
             <h3 style="color: #38bdf8; margin: 5px 0;">🎮 Acc #10</h3>
-            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">⭐ <strong>Level:</
+            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin: 5px 0;">⭐ <strong>Level:</strong> 14<br>🔐 <strong>Login:</strong> Facebook<br>💰 <strong>Giá:</strong> <strong style="color: #4ade80;">10.000đ</strong></p>
+            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
+        </div>
+
+        <div style="margin-top: 25px; padding-top: 15px; border-top: 1px dashed #1e3a8a;">
+            <h3 style="color: #38bdf8; margin-bottom: 10px;">💳 Phương Thức Thanh Toán</h3>
+            <div class="payment">🏦 Chuyển khoản<br>💳 Thẻ điện thoại (card)<br>💵 Tiền mặt<br>🎮 Đồ trong game<br>💎 Kim cương</div>
+        </div>
+    </section>
+
+    <section class="contact">
+        <h2>📩 MUA LIKES IB NHA!</h2>
+        <p>👤 Facebook: <strong>Bug New</strong></p>
+        <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank" rel="noopener noreferrer">💬 LIÊN HỆ FACEBOOK</a>
+        <p class="note">Nhấn nút để mở Facebook, sau đó tìm tài khoản Bug New.</p>
+    </sectio
