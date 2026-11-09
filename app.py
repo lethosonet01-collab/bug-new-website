@@ -19,8 +19,10 @@ header p { margin-bottom: 0; color: #e0f2fe; }
 .card h2 { margin-top: 0; color: #38bdf8; font-size: 20px; text-align: center; text-shadow: 0 0 8px rgba(56,189,248,0.5); }
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; margin-bottom: 5px; color: #38bdf8; font-weight: bold; }
-.form-control { width: 100%; padding: 12px; background: #0b1326; border: 1px solid #1e3a8a; border-radius: 10px; color: white; font-size: 16px; }
+.password-wrapper { position: relative; }
+.form-control { width: 100%; padding: 12px; padding-right: 45px; background: #0b1326; border: 1px solid #1e3a8a; border-radius: 10px; color: white; font-size: 16px; }
 .form-control:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 10px rgba(56,189,248,0.5); }
+.toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 18px; color: #38bdf8; padding: 0; }
 .btn { display: block; width: 100%; text-align: center; padding: 14px; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.3s; box-shadow: 0 0 15px rgba(37,99,235,0.5); }
 .btn:hover { background: linear-gradient(135deg, #0ea5e9, #3b82f6); box-shadow: 0 0 25px rgba(56,189,248,0.8); }
 .error-msg { background: #450a0a; border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; }
@@ -60,6 +62,17 @@ window.addEventListener('DOMContentLoaded', () => {
         height = canvas.height = window.innerHeight;
     });
 });
+
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "👁️‍🗨️";
+    } else {
+        input.type = "password";
+        btn.textContent = "👁️";
+    }
+}
 </script>
 """
 
@@ -90,8 +103,14 @@ def login():
             {% if success %}<div class="success-msg">{{ success }}</div>{% endif %}
             {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
             <form method="POST">
-                <div class="form-group"><label>Tên tài khoản:</label><input type="text" name="username" class="form-control" placeholder="Ví dụ: bugnew" required></div>
-                <div class="form-group"><label>Mật khẩu:</label><input type="password" name="password" class="form-control" placeholder="Nhập mật khẩu..." required></div>
+                <div class="form-group"><label>Tên tài khoản:</label><input type="text" name="username" class="form-control" placeholder="Ví dụ: BugNew" required></div>
+                <div class="form-group">
+                    <label>Mật khẩu:</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" id="password-input" class="form-control" placeholder="Nhập mật khẩu..." required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('password-input', this)">👁️</button>
+                    </div>
+                </div>
                 <button type="submit" class="btn">🚀 ĐĂNG NHẬP</button>
             </form>
             <div class="switch-link">Chưa có tài khoản? <a href="/register">Đăng ký ngay</a></div>
@@ -112,10 +131,10 @@ def register():
   if request.method == "POST":
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "").strip()
-    if not username.islower() or not username.isalnum():
+    if not username.isalpha():
       error = (
-          "Tên tài khoản chỉ được phép viết chữ thường, không dấu, không khoảng"
-          " trắng và không chứa ký tự đặc biệt!"
+          "Tên tài khoản chỉ được phép chứa chữ cái (viết thường hoặc viết"
+          " hoa), tuyệt đối không được chứa số hay ký tự đặc biệt!"
       )
     elif username in users_db:
       error = "Tên tài khoản này đã tồn tại, vui lòng chọn tên khác!"
@@ -139,8 +158,14 @@ def register():
             <h2>➕ ĐĂNG KÝ TÀI KHOẢN</h2>
             {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
             <form method="POST">
-                <div class="form-group"><label>Tên tài khoản (Chỉ viết thường, không dấu, không cách):</label><input type="text" name="username" class="form-control" placeholder="Ví dụ: bugnew" required></div>
-                <div class="form-group"><label>Mật khẩu:</label><input type="password" name="password" class="form-control" placeholder="Ví dụ: bugnewff.01" required></div>
+                <div class="form-group"><label>Tên tài khoản (Chỉ chữ cái thường/hoa, không số, không cách):</label><input type="text" name="username" class="form-control" placeholder="Ví dụ: BugNew" required></div>
+                <div class="form-group">
+                    <label>Mật khẩu:</label>
+                    <div class="password-wrapper">
+                        <input type="password" name="password" id="password-input-reg" class="form-control" placeholder="Ví dụ: bugnewff.01" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('password-input-reg', this)">👁️</button>
+                    </div>
+                </div>
                 <button type="submit" class="btn">✨ ĐĂNG KÝ NGAY</button>
             </form>
             <div class="switch-link">Đã có tài khoản? <a href="/login">Đăng nhập ngay</a></div>
@@ -158,7 +183,7 @@ def register():
 def logout():
   session.pop("user", None)
   return redirect(url_for("login"))
-    HOME_STYLE = """
+HOME_STYLE = """
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
@@ -361,7 +386,7 @@ def home():
             <p class="note">Nhấn nút để mở Facebook, sau đó tìm tài khoản Bug New.</p>
         </section>
     </div>
-    <footer>🤴 © Admin Bug New | Mua thì liên hệ ☎️</footer>
+    <footer>⚡ © 2026 BUG NEW | DỊCH VỤ CỦA BUG NEW ⚡</footer>
     </body>
     </html>
     """,
@@ -372,3 +397,4 @@ def home():
 
 if __name__ == "__main__":
   app.run(host="0.0.0.0", port=5000)
+    
