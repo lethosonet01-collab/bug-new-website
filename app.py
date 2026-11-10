@@ -6,8 +6,6 @@ app.secret_key = "bug_new_secret_key_secure"
 
 users_db = {"BugNew": "bugnewff.01"}
 user_coins = {"BugNew": 500}
-
-# Lịch sử chung của toàn bộ hệ thống cho tất cả tài khoản
 global_history = [
     (
         "BugNew",
@@ -57,7 +55,7 @@ function togglePassword(id, btn) {
 </script>
 """
 
-HOME_STYLE = """
+HOME_BLIND_STYLE = """
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 * { box-sizing: border-box; }
@@ -78,6 +76,16 @@ header h1 { margin: 0; font-size: 25px; }
 .contact { text-align: center; padding: 20px; background: linear-gradient(135deg, #082f49, #0369a1); border-radius: 14px; border: 1px solid #38bdf8; }
 footer { text-align: center; padding: 20px; color: #94a3b8; font-size: 12px; }
 #cyber-stream-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.2; }
+.coin-box { background: linear-gradient(135deg, #854d0e, #a16207); border: 1px solid #facc15; padding: 12px; border-radius: 10px; text-align: center; font-size: 17px; font-weight: bold; color: #fef08a; margin-bottom: 15px; }
+.btn-action { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #e11d48, #be185d); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; margin-top: 8px; }
+.bags-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 15px 0; }
+.bag-item { background: #0b1326; border: 2px dashed #f43f5e; border-radius: 12px; padding: 20px 10px; text-align: center; cursor: pointer; width:100%; }
+.bag-item:hover { background: #1f1124; border-color: #fb7185; }
+.history-box { background: #0b1326; border: 1px solid #1e3a8a; border-radius: 8px; padding: 10px; max-height: 220px; overflow-y: auto; font-size: 12px; color: #cbd5e1; }
+.history-item { padding: 6px 0; border-bottom: 1px solid #172554; }
+.opening-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100; justify-content:center; align-items:center; flex-direction:column; text-align:center; padding:20px; }
+@keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 20% { transform: translate(-3px, 0px) rotate(-5deg); } 40% { transform: translate(3px, 2px) rotate(5deg); } 60% { transform: translate(-1px, -1px) rotate(0deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
+.shaking { animation: shake 0.4s infinite; }
 </style>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
@@ -88,45 +96,6 @@ window.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = 'rgba(5, 8, 20, 0.1)'; ctx.fillRect(0, 0, w, h);
         ctx.fillStyle = '#0ea5e9'; ctx.font = size + 'px monospace';
         drops.forEach((y, i) => { ctx.fillText(symbols.charAt(Math.floor(Math.random()*symbols.length)), i*size, y*size); if(y*size > h && Math.random() > 0.95) drops[i]=0; drops[i]++; });
-    }, 30);
-});
-</script>
-"""
-
-BLIND_BAG_STYLE = """
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-* { box-sizing: border-box; }
-body { margin: 0; font-family: Arial, sans-serif; background: #050814; color: white; overflow-x: hidden; }
-header { padding: 25px 15px; text-align: center; background: linear-gradient(135deg, #be185d, #e11d48); position: relative; }
-header h1 { margin: 0; font-size: 25px; text-shadow: 0 0 10px #fff; }
-.back-btn { position: absolute; top: 10px; left: 15px; background: rgba(0,0,0,0.4); padding: 5px 10px; border-radius: 15px; font-size: 12px; border: 1px solid rgba(255,255,255,0.4); color: white; text-decoration: none; font-weight: bold; }
-.user-badge { position: absolute; top: 10px; right: 15px; background: rgba(0,0,0,0.4); padding: 5px 10px; border-radius: 15px; font-size: 12px; border: 1px solid rgba(255,255,255,0.4); }
-.container { max-width: 650px; margin: auto; padding: 15px; position: relative; z-index: 10; }
-.card { background: rgba(19, 29, 48, 0.9); border: 1px solid #f43f5e; border-radius: 14px; padding: 18px; margin-bottom: 15px; }
-.card h2 { margin-top: 0; color: #fb7185; font-size: 18px; text-align: center; }
-.coin-box { background: linear-gradient(135deg, #854d0e, #a16207); border: 1px solid #facc15; padding: 12px; border-radius: 10px; text-align: center; font-size: 17px; font-weight: bold; color: #fef08a; margin-bottom: 15px; }
-.btn-action { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #e11d48, #be185d); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; margin-top: 8px; }
-.bags-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 15px 0; }
-.bag-item { background: #0b1326; border: 2px dashed #f43f5e; border-radius: 12px; padding: 20px 10px; text-align: center; cursor: pointer; width:100%; }
-.bag-item:hover { background: #1f1124; border-color: #fb7185; }
-.history-box { background: #0b1326; border: 1px solid #1e3a8a; border-radius: 8px; padding: 10px; max-height: 220px; overflow-y: auto; font-size: 12px; color: #cbd5e1; }
-.history-item { padding: 6px 0; border-bottom: 1px solid #172554; }
-#radar-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15; }
-.opening-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100; justify-content:center; align-items:center; flex-direction:column; text-align:center; padding:20px; }
-@keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 20% { transform: translate(-3px, 0px) rotate(-5deg); } 40% { transform: translate(3px, 2px) rotate(5deg); } 60% { transform: translate(-1px, -1px) rotate(0deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
-.shaking { animation: shake 0.4s infinite; }
-</style>
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.createElement('canvas'); canvas.id = 'radar-canvas'; document.body.prepend(canvas);
-    const ctx = canvas.getContext('2d'); let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight; let angle = 0;
-    setInterval(() => {
-        ctx.fillStyle = 'rgba(5, 8, 20, 0.08)'; ctx.fillRect(0, 0, w, h);
-        ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 1; const cx = w/2, cy = h/2;
-        ctx.beginPath(); ctx.arc(cx, cy, 100, 0, Math.PI*2); ctx.arc(cx, cy, 200, 0, Math.PI*2); ctx.stroke();
-        ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle); ctx.strokeStyle = '#fb7185'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(300,0); ctx.stroke(); ctx.restore(); angle += 0.03;
     }, 30);
 });
 
@@ -143,7 +112,6 @@ function openBagAnimation(bagNum) {
     
     setTimeout(() => {
         boxImg.classList.remove('shaking');
-        // Gửi form ngầm để lấy kết quả từ Flask
         fetch('/open-bag-api', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -232,7 +200,7 @@ def register():
 def logout():
     session.pop("user", None)
     return redirect(url_for("login"))
-    @app.route("/")
+@app.route("/")
 def home():
     if "user" not in session: return redirect(url_for("login"))
     u = session["user"]
@@ -348,8 +316,8 @@ def home():
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">💬 LIÊN HỆ FACEBOOK</a>
         </div>
     </div>
-    <footer>🔰 © Admin BUG NEW 🔰</footer>
-    </body></html>""", style=HOME_STYLE, u=u)
+    <footer>🤴 © Admin BUG NEW 🤴</footer>
+    </body></html>""", style=HOME_BLIND_STYLE, u=u)
 
 @app.route("/blind-bag", methods=["GET", "POST"])
 def blind_bag():
@@ -407,7 +375,6 @@ def blind_bag():
         </div>
     </div>
 
-    <!-- HỘP THOẠI HIỆU ỨNG MỞ TÚI MÙ -->
     <div id="openingModal" class="opening-modal">
         <div id="boxImg" style="font-size:80px; margin-bottom:15px;">📦</div>
         <h2 id="rewardText" style="color:#fb7185; margin-bottom:15px;">Đang mở túi mù...</h2>
@@ -417,8 +384,8 @@ def blind_bag():
         </div>
     </div>
 
-    <footer>🎊 Chúc Bạn May Mắn 🎊</footer>
-    </body></html>""", style=BLIND_BAG_STYLE, u=u, coins=user_coins[u], history=global_history, msg=msg, msg_type=msg_type)
+    <footer>🔰 © 2026 BUG NEW 🔰</footer>
+    </body></html>""", style=HOME_BLIND_STYLE, u=u, coins=user_coins[u], history=global_history, msg=msg, msg_type=msg_type)
 
 @app.route("/open-bag-api", methods=["POST"])
 def open_bag_api():
@@ -426,7 +393,7 @@ def open_bag_api():
     if "user" not in session: return {"status": "error", "msg": "Chưa đăng nhập!"}
     u = session["user"]
     if user_coins.get(u, 0) < 75:
-        return {"status": "error", "msg": f"Không đủ xu! Cần 75 xu (Bạn có {user_coins[u]} xu)."}
+        return {"status": "error", "msg": f"Không đủ xu! Cần 75 xu (Bạn đang có {user_coins.get(u, 0)} xu)."}
     
     user_coins[u] -= 75
     rewards = ["💔 Chúc bạn may mắn lần sau", "❤️ 20 like", "❤️ 50 like", "❤️ 100 like", "❤️ 150 like", "❤️ 200 like", "❤️ 220 like", "🔥 1100 like"]
