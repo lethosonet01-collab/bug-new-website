@@ -1,408 +1,347 @@
+from flask import Flask, render_template_string, request, redirect, url_for, session
+import os
+import json
+import random
 from datetime import datetime
-from flask import Flask, redirect, render_template_string, request, session, url_for
 
 app = Flask(__name__)
-app.secret_key = "bug_new_secret_key_secure"
+app.secret_key = 'bug_new_secret_key_secure_2026'
 
-users_db = {"BugNew": "bugnewff.01"}
-user_coins = {"BugNew": 500}
-global_history = [
-    (
-        "BugNew",
-        f"[{datetime.now().strftime('%H:%M %d/%m')}] 🎁 Nhận 200 xu điểm danh",
-    )
+DATA_FILE = 'users_data.json'
+
+# Hàm đọc dữ liệu từ file JSON vĩnh viễn (Chống mất tài khoản khi server ngủ đông)
+def load_data():
+    if not os.path.exists(DATA_FILE):
+        return {"users": {}, "history": []}
+    try:
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except:
+        return {"users": {}, "history": []}
+
+# Hàm ghi dữ liệu vào file JSON vĩnh viễn
+def save_data(data):
+    with open(DATA_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+        # Danh sách 10 kho Acc Free Fire chuẩn chỉnh
+ACC_LIST = [
+    {"id": 1, "name": "Acc FF VIP #1", "level": "10%", "price": "4.400đ", "img": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&q=80"},
+    {"id": 2, "name": "Acc FF VIP #2", "level": "10%", "price": "4.400đ", "img": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&q=80"},
+    {"id": 3, "name": "Acc FF VIP #3", "level": "10%", "price": "11.000đ", "img": "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&q=80"},
+    {"id": 4, "name": "Acc FF VIP #4", "level": "10%", "price": "11.000đ", "img": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&q=80"},
+    {"id": 5, "name": "Acc FF VIP #5", "level": "10%", "price": "2.200đ", "img": "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=300&q=80"},
+    {"id": 6, "name": "Acc FF VIP #6", "level": "10%", "price": "2.200đ", "img": "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=300&q=80"},
+    {"id": 7, "name": "Acc FF VIP #7", "level": "10%", "price": "5.500đ", "img": "https://images.unsplash.com/photo-1612287233002-ef1d014f3da3?w=300&q=80"},
+    {"id": 8, "name": "Acc FF VIP #8", "level": "10%", "price": "5.500đ", "img": "https://images.unsplash.com/photo-1589241062272-c0a000071dfa?w=300&q=80"},
+    {"id": 9, "name": "Acc FF VIP #9", "level": "10%", "price": "11.000đ", "img": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=300&q=80"},
+    {"id": 10, "name": "Acc FF VIP #10", "level": "10%", "price": "11.000đ", "img": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&q=80"}
 ]
-last_checkin = {}
 
-LOGIN_REGISTER_STYLE = """
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-* { box-sizing: border-box; }
-body { margin: 0; font-family: Arial, sans-serif; background: #050814; color: white; overflow-x: hidden; }
-header { padding: 25px 15px; text-align: center; background: linear-gradient(135deg, #1d4ed8, #0284c7); }
-header h1 { margin: 0; font-size: 25px; text-shadow: 0 0 10px #38bdf8; }
-.container { max-width: 650px; margin: auto; padding: 15px; position: relative; z-index: 10; }
-.card { background: rgba(19, 29, 48, 0.9); border: 1px solid #38bdf8; border-radius: 14px; padding: 18px; margin-bottom: 15px; }
-.card h2 { margin-top: 0; color: #38bdf8; font-size: 18px; text-align: center; }
-.form-group { margin-bottom: 12px; }
-.form-group label { display: block; margin-bottom: 4px; color: #38bdf8; font-weight: bold; }
-.password-wrapper { position: relative; }
-.form-control { width: 100%; padding: 11px; padding-right: 40px; background: #0b1326; border: 1px solid #1e3a8a; border-radius: 8px; color: white; font-size: 15px; }
-.toggle-password { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: #38bdf8; }
-.btn { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
-.error-msg { background: #450a0a; border: 1px solid #ef4444; color: #fca5a5; padding: 10px; border-radius: 8px; margin-bottom: 12px; text-align: center; font-weight: bold; }
-.success-msg { background: #064e3b; border: 1px solid #10b981; color: #6ee7b7; padding: 10px; border-radius: 8px; margin-bottom: 12px; text-align: center; font-weight: bold; }
-.switch-link { text-align: center; margin-top: 12px; font-size: 13px; color: #94a3b8; }
-.switch-link a { color: #38bdf8; text-decoration: none; font-weight: bold; }
-#matrix-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.2; }
-</style>
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.createElement('canvas'); canvas.id = 'matrix-canvas'; document.body.prepend(canvas);
-    const ctx = canvas.getContext('2d'); let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
-    const letters = '01BUGNEW'; const size = 14; const cols = w / size; const drops = Array.from({length: cols}, () => 1);
-    setInterval(() => {
-        ctx.fillStyle = 'rgba(5, 8, 20, 0.05)'; ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#38bdf8'; ctx.font = size + 'px monospace';
-        drops.forEach((y, i) => { ctx.fillText(letters.charAt(Math.floor(Math.random()*letters.length)), i*size, y*size); if(y*size > h && Math.random() > 0.975) drops[i]=0; drops[i]++; });
-    }, 33);
-});
-function togglePassword(id, btn) {
-    const input = document.getElementById(id);
-    input.type = input.type === "password" ? "text" : "password";
-    btn.textContent = input.type === "password" ? "👁️" : "👁️‍🗨️";
-}
-</script>
-"""
-
-HOME_BLIND_STYLE = """
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-* { box-sizing: border-box; }
-body { margin: 0; font-family: Arial, sans-serif; background: #050814; color: white; scroll-behavior: smooth; overflow-x: hidden; }
-header { padding: 25px 15px; text-align: center; background: linear-gradient(135deg, #1d4ed8, #0284c7); position: relative; z-index: 10; }
-header h1 { margin: 0; font-size: 25px; }
-.user-badge { position: absolute; top: 10px; right: 15px; background: rgba(0,0,0,0.4); padding: 5px 10px; border-radius: 15px; font-size: 12px; }
-.user-badge a { color: #f87171; text-decoration: none; margin-left: 5px; font-weight: bold; }
-.blind-bag-btn-top { position: absolute; top: 10px; left: 15px; background: rgba(220,38,38,0.8); padding: 5px 10px; border-radius: 15px; font-size: 12px; color: white; text-decoration: none; font-weight: bold; }
-.container { max-width: 650px; margin: auto; padding: 15px; position: relative; z-index: 10; }
-.card { background: rgba(19, 29, 48, 0.9); border: 1px solid #1e3a8a; border-radius: 14px; padding: 18px; margin-bottom: 15px; }
-.card h2 { margin-top: 0; color: #38bdf8; font-size: 18px; }
-.price { display: flex; justify-content: space-between; padding: 12px; margin: 8px 0; background: #0b1326; border-radius: 8px; border: 1px solid #172554; }
-.money { color: #4ade80; font-weight: bold; }
-.nav-acc-btn { display: block; text-align: center; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: bold; text-decoration: none; margin-bottom: 20px; }
-.acc-item { background: #0b1326; border-radius: 10px; padding: 12px; margin-bottom: 15px; border: 1px solid #1e3a8a; }
-.button { display: block; text-align: center; margin-top: 10px; padding: 10px; background: #22c55e; color: #052e16; text-decoration: none; border-radius: 8px; font-weight: bold; }
-.contact { text-align: center; padding: 20px; background: linear-gradient(135deg, #082f49, #0369a1); border-radius: 14px; border: 1px solid #38bdf8; }
-footer { text-align: center; padding: 20px; color: #94a3b8; font-size: 12px; }
-#cyber-stream-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.2; }
-.coin-box { background: linear-gradient(135deg, #854d0e, #a16207); border: 1px solid #facc15; padding: 12px; border-radius: 10px; text-align: center; font-size: 17px; font-weight: bold; color: #fef08a; margin-bottom: 15px; }
-.btn-action { display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, #e11d48, #be185d); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; margin-top: 8px; }
-.bags-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 15px 0; }
-.bag-item { background: #0b1326; border: 2px dashed #f43f5e; border-radius: 12px; padding: 20px 10px; text-align: center; cursor: pointer; width:100%; }
-.bag-item:hover { background: #1f1124; border-color: #fb7185; }
-.history-box { background: #0b1326; border: 1px solid #1e3a8a; border-radius: 8px; padding: 10px; max-height: 220px; overflow-y: auto; font-size: 12px; color: #cbd5e1; }
-.history-item { padding: 6px 0; border-bottom: 1px solid #172554; }
-.opening-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:100; justify-content:center; align-items:center; flex-direction:column; text-align:center; padding:20px; }
-@keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 20% { transform: translate(-3px, 0px) rotate(-5deg); } 40% { transform: translate(3px, 2px) rotate(5deg); } 60% { transform: translate(-1px, -1px) rotate(0deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
-.shaking { animation: shake 0.4s infinite; }
-</style>
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.createElement('canvas'); canvas.id = 'cyber-stream-canvas'; document.body.prepend(canvas);
-    const ctx = canvas.getContext('2d'); let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
-    const symbols = '⚡💎BUGNEW'; const size = 16; const cols = w / size; const drops = Array.from({length: cols}, () => Math.floor(Math.random() * h));
-    setInterval(() => {
-        ctx.fillStyle = 'rgba(5, 8, 20, 0.1)'; ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#0ea5e9'; ctx.font = size + 'px monospace';
-        drops.forEach((y, i) => { ctx.fillText(symbols.charAt(Math.floor(Math.random()*symbols.length)), i*size, y*size); if(y*size > h && Math.random() > 0.95) drops[i]=0; drops[i]++; });
-    }, 30);
-});
-
-function openBagAnimation(bagNum) {
-    const modal = document.getElementById('openingModal');
-    const boxImg = document.getElementById('boxImg');
-    const rewardText = document.getElementById('rewardText');
-    const actionBtn = document.getElementById('actionBtn');
-    
-    modal.style.display = 'flex';
-    boxImg.classList.add('shaking');
-    rewardText.textContent = "🎁 Đang mở túi mù #" + bagNum + "...";
-    actionBtn.style.display = "none";
-    
-    setTimeout(() => {
-        boxImg.classList.remove('shaking');
-        fetch('/open-bag-api', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.status === 'success') {
-                rewardText.innerHTML = "🎉 Trúng thưởng: <b style='color:#facc15'>" + data.reward + "</b>";
-            } else {
-                rewardText.innerHTML = "<b style='color:#f87171'>" + data.msg + "</b>";
-            }
-            actionBtn.style.display = "block";
-        });
-    }, 1500);
-}
-</script>
-"""
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    error, success = None, request.args.get("success")
-    if request.method == "POST":
-        u, p = request.form.get("username", "").strip(), request.form.get("password", "").strip()
-        if u in users_db and users_db[u] == p:
-            session["user"] = u
-            if u not in user_coins: user_coins[u] = 0
-            return redirect(url_for("home"))
-        error = "Tài khoản hoặc mật khẩu không chính xác!"
-    return render_template_string("""
-    <!DOCTYPE html><html lang="vi"><head><title>ĐĂNG NHẬP</title>{{ style | safe }}</head>
-    <body>
-    <header><h1>🛍️ SHOP BUG NEW</h1><p>CỔNG ĐĂNG NHẬP</p></header>
-    <div class="container" style="margin-top: 30px;">
-        <div class="card">
-            <h2>🔑 ĐĂNG NHẬP</h2>
-            {% if success %}<div class="success-msg">{{ success }}</div>{% endif %}
-            {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
-            <form method="POST">
-                <div class="form-group"><label>Tài khoản:</label><input type="text" name="username" class="form-control" required></div>
-                <div class="form-group"><label>Mật khẩu:</label>
-                    <div class="password-wrapper">
-                        <input type="password" name="password" id="p1" class="form-control" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('p1', this)">👁️</button>
-                    </div>
-                </div>
-                <button type="submit" class="btn">🚀 ĐĂNG NHẬP</button>
-            </form>
-            <div class="switch-link">Chưa có tài khoản? <a href="/register">Đăng ký ngay</a></div>
-        </div>
-    </div></body></html>""", style=LOGIN_REGISTER_STYLE, success=success, error=error)
-
-@app.route("/register", methods=["GET", "POST"])
-def register():
+# Bảng giá chuẩn cập nhật mới
+PRICING_CARDS = [
+    {"likes": "220 Likes", "price": "4.400đ"},
+    {"likes": "1.100 Likes", "price": "11.000đ"},
+    {"likes": "2.200 Likes", "price": "22.000đ"},
+    {"likes": "4.500 Likes", "price": "45.000đ"}
+]
+@app.route('/auth', methods=['GET', 'POST'])
+def auth_page():
     error = None
-    if request.method == "POST":
-        u, p = request.form.get("username", "").strip(), request.form.get("password", "").strip()
-        if not u.isalpha(): error = "Tài khoản chỉ được chứa chữ cái, không số/ký tự đặc biệt!"
-        elif u in users_db: error = "Tài khoản đã tồn tại!"
-        elif len(p) < 6: error = "Mật khẩu phải từ 6 ký tự!"
-        else:
-            users_db[u], user_coins[u] = p, 0
-            return redirect(url_for("login", success="Đăng ký thành công! Hãy đăng nhập."))
-    return render_template_string("""
-    <!DOCTYPE html><html lang="vi"><head><title>ĐĂNG KÝ</title>{{ style | safe }}</head>
-    <body>
-    <header><h1>🛍️ SHOP BUG NEW</h1><p>TẠO TÀI KHOẢN</p></header>
-    <div class="container" style="margin-top: 20px;">
-        <div class="card">
-            <h2>➕ ĐĂNG KÝ</h2>
-            {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
-            <form method="POST">
-                <div class="form-group"><label>Tài khoản (Chỉ chữ cái):</label><input type="text" name="username" class="form-control" required></div>
-                <div class="form-group"><label>Mật khẩu:</label>
-                    <div class="password-wrapper">
-                        <input type="password" name="password" id="p2" class="form-control" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('p2', this)">👁️</button>
-                    </div>
-                </div>
-                <button type="submit" class="btn">✨ ĐĂNG KÝ NGAY</button>
-            </form>
-            <div class="switch-link">Đã có tài khoản? <a href="/login">Đăng nhập ngay</a></div>
-        </div>
-    </div></body></html>""", style=LOGIN_REGISTER_STYLE, error=error)
-
-@app.route("/logout")
-def logout():
-    session.pop("user", None)
-    return redirect(url_for("login"))
-@app.route("/")
-def home():
-    if "user" not in session: return redirect(url_for("login"))
-    u = session["user"]
-    return render_template_string("""
-    <!DOCTYPE html><html lang="vi"><head><title>SHOP LIKES</title>{{ style | safe }}</head>
-    <body>
-    <header>
-        <a href="/blind-bag" class="blind-bag-btn-top">🎁 Túi Mù</a>
-        <div class="user-badge">👤 <b>{{ u }}</b> | <a href="/logout">Đăng xuất</a></div>
-        <h1>🛍️ SHOP BUG NEW</h1><p>🎮 TẤT CẢ DỊCH VỤ GAME FF</p>
-    </header>
-    <div class="container">
-        <div class="card" style="text-align:center;">
-            <h2>🔥 BẢNG GIÁ BUFF LIKES</h2>
-            <p style="color:#cbd5e1; font-size:13px;">Mỗi ngày tối đa 220 likes / ngày!</p>
-        </div>
-        <div class="card">
-            <h2>🏦 GIÁ CHUYỂN KHOẢN</h2>
-            <div class="price"><span>👍 220 Likes</span><span class="money">2.000đ</span></div>
-            <div class="price"><span>👍 1.100 Likes</span><span class="money">5.000đ</span></div>
-            <div class="price"><span>👍 3.300 Likes</span><span class="money">10.000đ</span></div>
-            <div class="price"><span>👍 8.800 Likes</span><span class="money">20.000đ</span></div>
-        </div>
-        <div class="card">
-            <h2>💳 GIÁ THẺ ĐIỆN THOẠI (CARD)</h2>
-            <div class="price"><span>👍 4.400 Likes</span><span class="money">20.000đ</span></div>
-            <div class="price"><span>👍 11.000 Likes</span><span class="money">50.000đ</span></div>
-        </div>
-        <div class="card">
-            <h2>🎮 GIÁ ĐỒ TRONG GAME</h2>
-            <div class="price"><span>👍 2.200 Likes</span><span class="money">💎 &lt; 100</span></div>
-            <div class="price"><span>👍 5.500 Likes</span><span class="money">💎 &lt; 200</span></div>
-            <div class="price"><span>👍 11.000 Likes</span><span class="money">💎 &lt; 300</span></div>
-        </div>
-        <div class="card">
-            <h2>💎 GIÁ NẠP KIM CƯƠNG</h2>
-            <div class="price"><span>👍 1.100 Likes</span><span class="money">💎 25</span></div>
-            <div class="price"><span>👍 2.200 Likes</span><span class="money">💎 51</span></div>
-            <div class="price"><span>👍 5.500 Likes</span><span class="money">💎 113</span></div>
-            <div class="price"><span>👍 12.100 Likes</span><span class="money">💎 283</span></div>
-        </div>
-
-        <a href="#kho-acc" class="nav-acc-btn">📦 XEM KHO ACC FREE FIRE (10 ACC)</a>
+    success = None
+    if request.method == 'POST':
+        action = request.form.get('action')
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+        gmail = request.form.get('gmail', '').strip()
         
-        <div class="card" id="kho-acc">
-            <h2 style="text-align:center;">🔥 KHO ACC FREE FIRE 🔥</h2>
-            
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/rwBsvfSm/Screenshot-20261102-174419-com-dts-freefireth.jpg" alt="Acc 1" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #1</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 34<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">35.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/3R7RwWS6/Screenshot-20261102-174720-com-dts-freefireth.jpg" alt="Acc 2" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #2</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 21<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">20.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/3NxxgVHC/Screenshot-20261031-191554-com-dts-freefireth.jpg" alt="Acc 3" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #3</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 18<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">15.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/rwfKhsvC/Screenshot-20261031-191554-com-dts-freefireth.jpg" alt="Acc 4" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #4</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 26<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">15.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/28cDMWSj/Screenshot-20261031-191815-com-dts-freefireth.jpg" alt="Acc 5" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #5</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 9<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">36.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/XqjRDNM8/Screenshot-20261031-191924-com-dts-freefireth.jpg" alt="Acc 6" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #6</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 13<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">5.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/ncwy0t3T/Screenshot-20261031-192021-com-dts-freefireth.jpg" alt="Acc 7" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #7</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 22<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">20.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/3w2z80YD/Screenshot-20261031-192143-com-dts-freefireth.jpg" alt="Acc 8" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #8</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 2<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">25.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/J4tgy2RD/Screenshot-20261031-192412-com-dts-freefireth.jpg" alt="Acc 9" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #9</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 28<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">30.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-            <div class="acc-item">
-                <img src="https://i.postimg.cc/JhCd27ZP/Screenshot-20261031-192920-com-dts-freefireth.jpg" alt="Acc 10" style="width:100%; border-radius:8px; margin-bottom:8px;">
-                <h3 style="color:#38bdf8; margin:5px 0;">🎮 Acc #10</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0;">⭐ <b>Level:</b> 14<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">10.000đ</strong></p>
-                <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
-            </div>
-        </div>
+        data = load_data()
+        
+        if action == 'register':
+            if not username or not password or not gmail:
+                error = "Vui lòng nhập đầy đủ Tên tài khoản, Mật khẩu và Gmail!"
+            elif username in data["users"]:
+                error = "Tên tài khoản này đã tồn tại!"
+            else:
+                gmail_exists = any(u_info.get('gmail') == gmail for u_info in data["users"].values())
+                if gmail_exists:
+                    error = "Gmail này đã được sử dụng cho một tài khoản khác (1 Gmail chỉ 1 tài khoản)!"
+                else:
+                    data["users"][username] = {
+                        "password": password,
+                        "gmail": gmail,
+                        "coins": 200,
+                        "claimed_today": False
+                    }
+                    save_data(data)
+                    success = "Đăng ký thành công! Hãy chuyển sang đăng nhập."
+        elif action == 'login':
+            if username in data["users"] and data["users"][username]["password"] == password:
+                session['username'] = username
+                return redirect(url_for('index'))
+            else:
+                error = "Sai tên tài khoản hoặc mật khẩu!"
 
-        <div class="contact">
-            <h2>📩 MUA LIKES IB NHA!</h2>
-            <p>Facebook: <b>Bug New</b></p>
-            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">💬 LIÊN HỆ FACEBOOK</a>
-        </div>
-    </div>
-    <footer>🤴 © Admin BUG NEW 🤴</footer>
-    </body></html>""", style=HOME_BLIND_STYLE, u=u)
-
-@app.route("/blind-bag", methods=["GET", "POST"])
-def blind_bag():
-    if "user" not in session: return redirect(url_for("login"))
-    u = session["user"]
-    msg, msg_type = None, None
-    if u not in user_coins: user_coins[u] = 0
-    today = datetime.now().strftime("%Y-%m-%d")
-
-    if request.method == "POST" and request.form.get("action") == "checkin":
-        if last_checkin.get(u) == today:
-            msg, msg_type = "❌ Bạn đã điểm danh hôm nay rồi!", "error"
-        else:
-            last_checkin[u] = today
-            user_coins[u] += 200
-            global_history.insert(0, (u, f"[{datetime.now().strftime('%H:%M %d/%m')}] 🎁 Nhận 200 xu điểm danh"))
-            msg, msg_type = "🎉 Nhận thành công +200 xu!", "success"
-
-    return render_template_string("""
-    <!DOCTYPE html><html lang="vi"><head><title>TÚI MÙ LIKES</title>{{ style | safe }}</head>
+    html_auth = """
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Đăng Nhập / Đăng Ký - BUG NEW</title>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+        <style>
+            :root { --neon-cyan: #38bdf8; --neon-green: #22c55e; --neon-pink: #ec4899; }
+            * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; }
+            body { background-color: #030712; color: #f8fafc; min-height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; overflow-x: hidden; }
+            body::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(0deg, rgba(3,7,18,0.9), rgba(3,7,18,0.7)), repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(56,189,248,0.05) 40px, rgba(56,189,248,0.05) 41px); z-index: -1; }
+            .auth-container { background: rgba(15, 23, 42, 0.9); border: 2px solid var(--neon-cyan); border-radius: 16px; width: 90%; max-width: 400px; padding: 30px; box-shadow: 0 0 30px rgba(56, 189, 248, 0.4); backdrop-filter: blur(10px); }
+            h2 { text-align: center; color: var(--neon-cyan); margin-bottom: 20px; font-size: 1.5rem; text-shadow: 0 0 10px var(--neon-cyan); }
+            .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #334155; }
+            .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #94a3b8; font-weight: 700; transition: 0.3s; }
+            .tab.active { color: var(--neon-cyan); border-bottom: 2px solid var(--neon-cyan); text-shadow: 0 0 8px var(--neon-cyan); }
+            .form-group { margin-bottom: 15px; }
+            label { display: block; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 5px; }
+            input { width: 100%; padding: 10px 14px; background: #030712; border: 1px solid #334155; border-radius: 8px; color: #fff; font-size: 0.9rem; outline: none; transition: 0.3s; }
+            input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+            .submit-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--neon-cyan), var(--neon-green)); border: none; border-radius: 8px; color: #000; font-weight: 900; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+            .submit-btn:hover { box-shadow: 0 0 20px var(--neon-green); transform: translateY(-2px); }
+            .alert-err { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; padding: 10px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 15px; text-align: center; }
+            .alert-succ { background: rgba(34, 197, 94, 0.2); border: 1px solid var(--neon-green); color: #86efac; padding: 10px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 15px; text-align: center; }
+            .form-box { display: none; } .form-box.active { display: block; }
+        </style>
+    </head>
     <body>
-    <header>
-        <a href="/" class="back-btn">🏠 Trang Chủ</a>
-        <div class="user-badge">👤 <b>{{ u }}</b></div>
-        <h1>🎁 TÚI MÙ LIKES FF</h1><p>SĂN NHÂN PHẨM</p>
-    </header>
-    <div class="container">
-        <div class="coin-box">💰 Tài khoản: <b>{{ u }}</b> | 🪙 Xu hiện có: <span style="color:#facc15;">{{ coins }}</span> xu</div>
-        {% if msg %}
-            <div class="card" style="border-color:{{ '#10b981' if msg_type=='success' else '#ef4444' }}; text-align:center;">
-                <h3 style="margin:0; color:{{ '#6ee7b7' if msg_type=='success' else '#fca5a5' }};">{{ msg }}</h3>
+        <div class="auth-container">
+            <h2>⚡ BUG NEW ⚡</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('login')">ĐĂNG NHẬP</div>
+                <div class="tab" onclick="switchTab('register')">ĐĂNG KÝ</div>
             </div>
-        {% endif %}
-        <div class="card">
-            <h2>📅 ĐIỂM DANH HẰNG NGÀY</h2>
-            <form method="POST"><input type="hidden" name="action" value="checkin">
-                <button type="submit" class="btn-action" style="background:linear-gradient(135deg, #059669, #10b981);">🎁 NHẬN 200 XU</button>
+            {% if error %}<div class="alert-err">{{ error }}</div>{% endif %}
+            {% if success %}<div class="alert-succ">{{ success }}</div>{% endif %}
+            <form id="login-form" class="form-box active" method="POST">
+                <input type="hidden" name="action" value="login">
+                <div class="form-group"><label>Tên tài khoản</label><input type="text" name="username" required placeholder="Nhập tên tài khoản..."></div>
+                <div class="form-group"><label>Mật khẩu</label><input type="password" name="password" required placeholder="Nhập mật khẩu..."></div>
+                <button type="submit" class="submit-btn">ĐĂNG NHẬP NGAY</button>
+            </form>
+            <form id="register-form" class="form-box" method="POST">
+                <input type="hidden" name="action" value="register">
+                <div class="form-group"><label>Tên tài khoản mới</label><input type="text" name="username" required placeholder="Chọn tên tài khoản..."></div>
+                <div class="form-group"><label>Gmail bảo mật (1 Gmail / 1 Tài khoản)</label><input type="email" name="gmail" required placeholder="example@gmail.com"></div>
+                <div class="form-group"><label>Mật khẩu</label><input type="password" name="password" required placeholder="Tạo mật khẩu..."></div>
+                <button type="submit" class="submit-btn" style="background: linear-gradient(135deg, var(--neon-pink), var(--neon-cyan));">ĐĂNG KÝ TÀI KHOẢN</button>
             </form>
         </div>
-        <div class="card">
-            <h2>🛍️ CHỌN 1 TRONG 4 TÚI MÙ (75 XU)</h2>
-            <div class="bags-grid">
-                <button type="button" class="bag-item" onclick="openBagAnimation(1)"><span style="font-size:30px;">📦</span><h3 style="margin:5px 0; color:#fb7185;">Túi #1</h3><span style="font-size:11px; color:#cbd5e1;">Phí: 75 xu</span></button>
-                <button type="button" class="bag-item" onclick="openBagAnimation(2)"><span style="font-size:30px;">📦</span><h3 style="margin:5px 0; color:#fb7185;">Túi #2</h3><span style="font-size:11px; color:#cbd5e1;">Phí: 75 xu</span></button>
-                <button type="button" class="bag-item" onclick="openBagAnimation(3)"><span style="font-size:30px;">📦</span><h3 style="margin:5px 0; color:#fb7185;">Túi #3</h3><span style="font-size:11px; color:#cbd5e1;">Phí: 75 xu</span></button>
-                <button type="button" class="bag-item" onclick="openBagAnimation(4)"><span style="font-size:30px;">📦</span><h3 style="margin:5px 0; color:#fb7185;">Túi #4</h3><span style="font-size:11px; color:#cbd5e1;">Phí: 75 xu</span></button>
+        <script>
+            function switchTab(tabName) {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.form-box').forEach(f => f.classList.remove('active'));
+                if(tabName === 'login') { document.querySelectorAll('.tab')[0].classList.add('active'); document.getElementById('login-form').classList.add('active'); }
+                else { document.querySelectorAll('.tab')[1].classList.add('active'); document.getElementById('register-form').classList.add('active'); }
+            }
+        </script>
+    </body>
+    </html>
+    """
+    return render_template_string(html_auth, error=error, success=success)
+
+@app.route('/')
+def index():
+    if 'username' not in session:
+        return redirect(url_for('auth_page'))
+    data = load_data()
+    username = session['username']
+    user_info = data["users"].get(username, {"coins": 0})
+    
+    html_template = """
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SHOP BUG NEW - Trang Chủ</title>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+        <style>
+            :root { --bg-color: #030712; --panel-bg: rgba(15, 23, 42, 0.85); --neon-cyan: #38bdf8; --neon-blue: #0284c7; --neon-green: #22c55e; --text-main: #f8fafc; }
+            * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; }
+            body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; overflow-x: hidden; position: relative; }
+            body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(2,132,199,0.08) 0%, rgba(3,7,18,0.95) 100%); z-index: -1; pointer-events: none; }
+            header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(15, 23, 42, 0.95); border-bottom: 2px solid var(--neon-cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); position: sticky; top: 0; z-index: 100; }
+            .logo { font-size: 1.2rem; font-weight: 900; color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); }
+            .user-bar { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+            .coin-badge { background: #1e293b; border: 1px solid var(--neon-green); padding: 5px 10px; border-radius: 20px; color: var(--neon-green); font-weight: 700; }
+            .nav-btn { background: transparent; border: 1px solid var(--neon-cyan); color: var(--neon-cyan); padding: 6px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
+            .nav-btn:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 10px var(--neon-cyan); }
+            .logout-btn { border-color: #ef4444; color: #ef4444; } .logout-btn:hover { background: #ef4444; color: #fff; box-shadow: 0 0 10px #ef4444; }
+            .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+            .section-title { text-align: center; font-size: 1.4rem; color: var(--neon-cyan); margin: 25px 0 15px; text-shadow: 0 0 10px rgba(56,189,248,0.5); text-transform: uppercase; }
+            .card-pod { background: var(--panel-bg); border: 1px solid var(--neon-blue); border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 0 20px rgba(2,132,199,0.2); transition: 0.3s; }
+            .card-pod:hover { transform: translateY(-4px); box-shadow: 0 0 25px rgba(56, 189, 248, 0.4); border-color: var(--neon-cyan); }
+            .notice-box { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 8px; text-align: center; font-weight: 700; margin-bottom: 20px; }
+            .acc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+            .acc-card { background: #0f172a; border: 1px solid #1e293b; border-radius: 10px; overflow: hidden; transition: all 0.3s ease; text-align: center; padding-bottom: 12px; }
+            .acc-card:hover { transform: scale(1.03); border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
+            .acc-card img { width: 100%; height: 110px; object-fit: cover; border-bottom: 1px solid #1e293b; }
+            .acc-card h4 { font-size: 0.9rem; margin: 8px 0; color: #fff; }
+            .acc-card p { font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px; }
+            .buy-btn { background: var(--neon-green); color: #000; border: none; padding: 6px 14px; font-weight: 900; border-radius: 6px; cursor: pointer; font-size: 0.75rem; transition: 0.2s; }
+            .buy-btn:hover { background: #16a34a; box-shadow: 0 0 10px var(--neon-green); color: #fff; }
+            .pricing-table { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+            .price-item { background: #1e293b; border: 1px solid #334155; padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+            .price-item:hover { border-color: var(--neon-cyan); background: #0f172a; }
+            .price-val { color: var(--neon-green); font-weight: 700; }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="logo">⚡ SHOP BUG NEW</div>
+            <div class="user-bar">
+                <span class="coin-badge">🪙 {{ user_info.coins }} Xu</span>
+                <span>👤 {{ username }}</span>
+                <a href="/blind_bag" class="nav-btn">🎁 Túi Mù</a>
+                <a href="/logout" class="nav-btn logout-btn">Đăng Xuất</a>
+            </div>
+        </header>
+        <div class="container">
+            <div class="section-title">🔥 Dịch Vụ Buff Likes & Game FF 🔥</div>
+            <div class="notice-box">⚠️ LƯU Ý: Mỗi ngày chỉ tối đa 220 likes / ngày!</div>
+            <div class="card-pod">
+                <h3 style="color: var(--neon-cyan); margin-bottom: 12px; font-size: 1.1rem;">📋 Bảng Giá Dịch Vụ Likes</h3>
+                <div class="pricing-table">
+                    {% for p in pricing_cards %}
+                    <div class="price-item"><span>👍 {{ p.likes }}</span><span class="price-val">{{ p.price }}</span></div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="section-title">🔥 Kho Acc Free Fire VIP 🔥</div>
+            <div class="acc-grid">
+                {% for acc in acc_list %}
+                <div class="acc-card">
+                    <img src="{{ acc.img }}" alt="{{ acc.name }}">
+                    <h4>{{ acc.name }}</h4>
+                    <p>Level: {{ acc.level }} | <b>{{ acc.price }}</b></p>
+                    <button class="buy-btn" onclick="alert('Vui lòng liên hệ Admin qua Facebook/Telegram để mua tài khoản này!')">MUA NGAY</button>
+                </div>
+                {% endfor %}
             </div>
         </div>
-        <div class="card">
-            <h2>📜 LỊCH SỬ HOẠT ĐỘNG CHUNG (TẤT CẢ TÀI KHOẢN)</h2>
-            <div class="history-box">
-                {% if history %}{% for user_name, item in history %}<div class="history-item"><b>[{{ user_name }}]</b> {{ item }}</div>{% endfor %}
-                {% else %}<div style="text-align:center; color:#64748b; padding:10px;">Chưa có lịch sử.</div>{% endif %}
+    </body>
+    </html>
+    """
+    return render_template_string(html_template, username=username, user_info=user_info, pricing_cards=PRICING_CARDS, acc_list=ACC_LIST)
+    @app.route('/blind_bag', methods=['GET', 'POST'])
+def blind_bag():
+    if 'username' not in session:
+        return redirect(url_for('auth_page'))
+    data = load_data()
+    username = session['username']
+    user_info = data["users"].get(username, {"coins": 0})
+    
+    msg = None
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'claim':
+            if not user_info.get("claimed_today", False):
+                user_info["coins"] += 200
+                user_info["claimed_today"] = True
+                data["history"].insert(0, {"time": datetime.now().strftime("%H:%M %d/%m"), "text": f"{username} đã điểm danh nhận 200 xu."})
+                save_data(data)
+                msg = "Điểm danh thành công +200 Xu!"
+            else:
+                msg = "Hôm nay bạn đã điểm danh rồi!"
+        elif action == 'open':
+            if user_info["coins"] >= 75:
+                user_info["coins"] -= 75
+                reward = random.choice([
+                    ("50 Likes Free Fire", 10),
+                    ("100 Likes Free Fire", 5),
+                    ("Acc Free Fire VIP", 1),
+                    ("Trượt mất rồi (Chúc may mắn lần sau)", 50)
+                ])
+                data["history"].insert(0, {"time": datetime.now().strftime("%H:%M %d/%m"), "text": f"{username} đã mở túi mù và trúng: {reward[0]}"})
+                save_data(data)
+                msg = f"🎉 Kết quả mở Túi Mù: {reward[0]}"
+            else:
+                msg = "❌ Bạn không đủ 75 xu để mở túi mù!"
+
+    html_bag = """
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Túi Mù Minigame - SHOP BUG NEW</title>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+        <style>
+            :root { --bg-color: #030712; --neon-pink: #f43f5e; --neon-cyan: #38bdf8; --neon-green: #22c55e; }
+            * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Orbitron', sans-serif; }
+            body { background-color: var(--bg-color); color: #f8fafc; min-height: 100vh; overflow-x: hidden; }
+            body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, rgba(244,63,94,0.1) 0%, rgba(3,7,18,0.95) 70%); z-index: -1; pointer-events: none; }
+            header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: rgba(15, 23, 42, 0.95); border-bottom: 2px solid var(--neon-pink); box-shadow: 0 0 15px rgba(244, 63, 94, 0.3); }
+            .logo { font-size: 1.2rem; font-weight: 900; color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); }
+            .user-bar { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+            .coin-badge { background: #1e293b; border: 1px solid var(--neon-green); padding: 5px 10px; border-radius: 20px; color: var(--neon-green); font-weight: 700; }
+            .nav-btn { background: transparent; border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 6px 12px; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 0.8rem; transition: 0.3s; }
+            .nav-btn:hover { background: var(--neon-pink); color: #fff; box-shadow: 0 0 10px var(--neon-pink); }
+            .container { max-width: 800px; margin: 20px auto; padding: 0 15px; text-align: center; }
+            .section-title { font-size: 1.5rem; color: var(--neon-pink); margin: 20px 0; text-shadow: 0 0 15px var(--neon-pink); text-transform: uppercase; }
+            .msg-box { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--neon-pink); color: #fecdd3; padding: 12px; border-radius: 8px; font-weight: 700; margin-bottom: 20px; box-shadow: 0 0 15px rgba(244,63,94,0.2); }
+            /* Hộp quà đồ họa CSS 3D Thay thế hoàn toàn Emoji */
+            .css-gift-box { width: 140px; height: 140px; margin: 30px auto; background: linear-gradient(135deg, #f43f5e, #881337); border: 2px solid var(--neon-cyan); border-radius: 16px; position: relative; box-shadow: 0 0 25px rgba(244, 63, 94, 0.6), inset 0 0 15px rgba(56, 189, 248, 0.5); display: flex; justify-content: center; align-items: center; cursor: pointer; animation: floatBox 3s ease-in-out infinite; transition: transform 0.3s ease; }
+            .css-gift-box:hover { transform: scale(1.08) rotate(3deg); }
+            .css-gift-box::before { content: ""; position: absolute; width: 20px; height: 100%; background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+            .css-gift-box::after { content: ""; position: absolute; width: 100%; height: 20px; background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
+            .gift-label { position: relative; z-index: 2; font-weight: 900; color: #fff; font-size: 0.85rem; text-shadow: 0 0 5px #000; }
+            @keyframes floatBox { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+            .action-buttons { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+            .game-btn { background: linear-gradient(135deg, var(--neon-pink), #e11d48); color: #fff; border: none; padding: 12px 24px; font-weight: 900; border-radius: 8px; cursor: pointer; font-size: 0.9rem; box-shadow: 0 0 15px rgba(244, 63, 94, 0.4); transition: 0.3s; }
+            .game-btn:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--neon-pink); }
+            .claim-btn { background: linear-gradient(135deg, var(--neon-green), #15803d); color: #000; box-shadow: 0 0 15px rgba(34,197,94,0.4); }
+            .claim-btn:hover { box-shadow: 0 0 25px var(--neon-green); color: #fff; }
+            .history-pod { background: rgba(15, 23, 42, 0.85); border: 1px solid var(--neon-pink); border-radius: 12px; padding: 20px; text-align: left; box-shadow: 0 0 20px rgba(244,63,94,0.2); }
+            .history-pod h3 { color: var(--neon-pink); margin-bottom: 12px; font-size: 1rem; text-align: center; }
+            .history-list { list-style: none; max-height: 200px; overflow-y: auto; font-size: 0.8rem; }
+            .history-item { padding: 8px 10px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; color: #cbd5e1; }
+            .history-time { color: var(--neon-cyan); }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="logo">🎁 TÚI MÙ BUG NEW</div>
+            <div class="user-bar">
+                <span class="coin-badge">🪙 {{ user_info.coins }} Xu</span>
+                <span>👤 {{ username }}</span>
+                <a href="/" class="nav-btn">⚡ Về Trang Chủ</a>
+                <a href="/logout" class="nav-btn" style="border-color:#ef4444; color:#ef4444;">Đăng Xuất</a>
+            </div>
+        </header>
+        <div class="container">
+            <div class="section-title">🔮 Săn Nhân Phẩm Túi Mù 🔮</div>
+            {% if msg %}<div class="msg-box">{{ msg }}</div>{% endif %}
+            <div class="css-gift-box" onclick="document.getElementById('open-form').submit();">
+                <div class="gift-label">MỞ TÚI (75 XU)</div>
+            </div>
+            <div class="action-buttons">
+                <form method="POST" style="display:inline;"><input type="hidden" name="action" value="claim"><button type="submit" class="game-btn claim-btn">🎁 Điểm Danh Nhận 200 Xu</button></form>
+                <form id="open-form" method="POST" style="display:inline;"><input type="hidden" name="action" value="open"><button type="submit" class="game-btn">⚡ Mở Ngay (75 Xu)</button></form>
+            </div>
+            <div class="history-pod">
+                <h3>📜 Lịch Sử Hoạt Động Chung</h3>
+                <ul class="history-list">
+                    {% for h in history %}
+                    <li class="history-item"><span>{{ h.text }}</span><span class="history-time">{{ h.time }}</span></li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
-    </div>
+    </body>
+    </html>
+    """
+    return render_template_string(html_bag, username=username, user_info=user_info, history=data["history"], msg=msg)
 
-    <div id="openingModal" class="opening-modal">
-        <div id="boxImg" style="font-size:80px; margin-bottom:15px;">📦</div>
-        <h2 id="rewardText" style="color:#fb7185; margin-bottom:15px;">Đang mở túi mù...</h2>
-        <div id="actionBtn" style="display:none;">
-            <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank" style="margin-bottom:10px;">💬 GỬI ẢNH CHO ADMIN QUA FACEBOOK</a>
-            <button onclick="location.reload()" style="background:#334155; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">TIẾP TỤC CHƠI</button>
-        </div>
-    </div>
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('auth_page'))
 
-    <footer>🔰 © 2026 BUG NEW 🔰</footer>
-    </body></html>""", style=HOME_BLIND_STYLE, u=u, coins=user_coins[u], history=global_history, msg=msg, msg_type=msg_type)
-
-@app.route("/open-bag-api", methods=["POST"])
-def open_bag_api():
-    import random
-    if "user" not in session: return {"status": "error", "msg": "Chưa đăng nhập!"}
-    u = session["user"]
-    if user_coins.get(u, 0) < 75:
-        return {"status": "error", "msg": f"Không đủ xu! Cần 75 xu (Bạn đang có {user_coins.get(u, 0)} xu)."}
-    
-    user_coins[u] -= 75
-    rewards = ["💔 Chúc bạn may mắn lần sau", "❤️ 20 like", "❤️ 50 like", "❤️ 100 like", "❤️ 150 like", "❤️ 200 like", "❤️ 220 like", "🔥 1100 like"]
-    weights = [25, 24, 17, 13, 9, 6, 4, 2]
-    won = random.choices(rewards, weights=weights, k=1)[0]
-    
-    global_history.insert(0, (u, f"[{datetime.now().strftime('%H:%M %d/%m')}] 🛍️ Mở túi (-75 xu) - Trúng: {won}"))
-    return {"status": "success", "reward": won}
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
     
