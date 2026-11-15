@@ -3,9 +3,9 @@ import random
 from flask import Flask, redirect, render_template_string, request, session, url_for
 
 app = Flask(__name__)
-app.secret_key = "bug_new_secret_key_secure"
+app.secret_key = "bug_new_secret_key_secure_3d"
 
-users_db = {"BugNew": "bugnewff.01"}
+users_db = {"BugNew": {"pass": "bugnewff.01", "gmail": "bugnew@gmail.com"}}
 user_coins = {"BugNew": 500}
 global_history = [
     (
@@ -15,42 +15,62 @@ global_history = [
 ]
 last_checkin = {}
 
-# 1. GIAO DIỆN ĐĂNG NHẬP (Tông Xanh Dương Điện - Cyan Matrix)
-LOGIN_STYLE = """
+# GIAO DIỆN 1: ĐĂNG NHẬP / ĐĂNG KÝ (Hiệu ứng Network Cyber 3D - Không trùng lặp)
+AUTH_STYLE = """
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 * { box-sizing: border-box; }
 body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #020617; color: #f3f4f6; overflow-x: hidden; }
-header { padding: 35px 20px; text-align: center; background: linear-gradient(135deg, #0f172a, #1e3a8a, #0284c7); border-bottom: 3px solid #38bdf8; box-shadow: 0 10px 30px rgba(56, 189, 248, 0.3); }
-header h1 { margin: 0; font-size: 30px; letter-spacing: 1px; color: #38bdf8; text-shadow: 0 0 20px rgba(56, 189, 248, 0.8); }
-header p { margin: 8px 0 0 0; color: #7dd3fc; font-size: 13px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; }
+header { padding: 40px 20px; text-align: center; background: radial-gradient(circle, #1e1b4b 0%, #020617 100%); border-bottom: 3px solid #6366f1; box-shadow: 0 15px 35px rgba(99, 102, 241, 0.4); }
+header h1 { margin: 0; font-size: 32px; letter-spacing: 2px; color: #818cf8; text-shadow: 0 0 25px rgba(129, 140, 248, 0.9); }
+header p { margin: 8px 0 0 0; color: #c7d2fe; font-size: 13px; text-transform: uppercase; letter-spacing: 4px; font-weight: bold; }
 .container { max-width: 480px; margin: auto; padding: 20px; position: relative; z-index: 10; }
-.card { background: rgba(15, 23, 42, 0.95); border: 2px solid #0284c7; border-radius: 18px; padding: 26px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(2, 132, 199, 0.25); backdrop-filter: blur(12px); }
-.card h2 { margin-top: 0; color: #38bdf8; font-size: 20px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+.card { background: rgba(15, 23, 42, 0.88); border: 2px solid #6366f1; border-radius: 20px; padding: 28px; margin-bottom: 20px; box-shadow: 0 15px 50px rgba(99, 102, 241, 0.3); backdrop-filter: blur(15px); }
+.card h2 { margin-top: 0; color: #818cf8; font-size: 22px; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
 .form-group { margin-bottom: 16px; }
-.form-group label { display: block; margin-bottom: 6px; color: #38bdf8; font-weight: 600; font-size: 14px; }
+.form-group label { display: block; margin-bottom: 6px; color: #a5b4fc; font-weight: 600; font-size: 14px; }
 .password-wrapper { position: relative; }
-.form-control { width: 100%; padding: 13px; padding-right: 45px; background: #020617; border: 1px solid #1e293b; border-radius: 10px; color: white; font-size: 15px; transition: all 0.3s ease; }
-.form-control:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
-.toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: #38bdf8; }
-.btn { display: block; width: 100%; padding: 14px; background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5); transition: transform 0.2s; }
+.form-control { width: 100%; padding: 14px; padding-right: 45px; background: #090d16; border: 1px solid #3730a3; border-radius: 12px; color: white; font-size: 15px; transition: all 0.3s ease; }
+.form-control:focus { outline: none; border-color: #818cf8; box-shadow: 0 0 20px rgba(129, 140, 248, 0.5); }
+.toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: #818cf8; }
+.btn { display: block; width: 100%; padding: 15px; background: linear-gradient(135deg, #4f46e5, #9333ea); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 6px 25px rgba(147, 51, 234, 0.6); transition: transform 0.2s; }
 .btn:active { transform: scale(0.98); }
-.error-msg { background: rgba(153, 27, 27, 0.5); border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 14px; }
-.success-msg { background: rgba(6, 78, 59, 0.5); border: 1px solid #10b981; color: #6ee7b7; padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 14px; }
+.error-msg { background: rgba(153, 27, 27, 0.6); border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 14px; }
+.success-msg { background: rgba(6, 78, 59, 0.6); border: 1px solid #10b981; color: #6ee7b7; padding: 12px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 14px; }
 .switch-link { text-align: center; margin-top: 15px; font-size: 14px; color: #94a3b8; }
-.switch-link a { color: #38bdf8; text-decoration: none; font-weight: bold; }
-#matrix-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.18; }
+.switch-link a { color: #818cf8; text-decoration: none; font-weight: bold; }
+#network-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
 </style>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.createElement('canvas'); canvas.id = 'matrix-canvas'; document.body.prepend(canvas);
+    const canvas = document.createElement('canvas'); canvas.id = 'network-canvas'; document.body.prepend(canvas);
     const ctx = canvas.getContext('2d'); let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
-    const letters = '01BUGNEW⚡'; const size = 14; const cols = w / size; const drops = Array.from({length: cols}, () => 1);
-    setInterval(() => {
-        ctx.fillStyle = 'rgba(2, 6, 23, 0.08)'; ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#38bdf8'; ctx.font = size + 'px monospace';
-        drops.forEach((y, i) => { ctx.fillText(letters.charAt(Math.floor(Math.random()*letters.length)), i*size, y*size); if(y*size > h && Math.random() > 0.975) drops[i]=0; drops[i]++; });
-    }, 30);
+    window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+    const particles = Array.from({length: 50}, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5,
+        radius: Math.random() * 2.5 + 1
+    }));
+    function animate() {
+        ctx.fillStyle = 'rgba(2, 6, 23, 0.25)'; ctx.fillRect(0, 0, w, h);
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.15)'; ctx.lineWidth = 1;
+        for (let i = 0; i < particles.length; i++) {
+            let p1 = particles[i];
+            p1.x += p1.vx; p1.y += p1.vy;
+            if (p1.x < 0 || p1.x > w) p1.vx *= -1;
+            if (p1.y < 0 || p1.y > h) p1.vy *= -1;
+            ctx.fillStyle = '#818cf8'; ctx.beginPath(); ctx.arc(p1.x, p1.y, p1.radius, 0, Math.PI * 2); ctx.fill();
+            for (let j = i + 1; j < particles.length; j++) {
+                let p2 = particles[j];
+                let dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+                if (dist < 120) {
+                    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
 });
 function togglePassword(id, btn) {
     const input = document.getElementById(id);
@@ -59,66 +79,21 @@ function togglePassword(id, btn) {
 }
 </script>
 """
-
-# 2. GIAO DIỆN ĐĂNG KÝ (Tông Tím Huyền Bí)
-REGISTER_STYLE = """
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-* { box-sizing: border-box; }
-body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f0728; color: #f3f4f6; overflow-x: hidden; }
-header { padding: 35px 20px; text-align: center; background: linear-gradient(135deg, #3b0764, #7e22ce, #c026d3); border-bottom: 3px solid #e879f9; box-shadow: 0 10px 30px rgba(232, 121, 249, 0.3); }
-header h1 { margin: 0; font-size: 30px; letter-spacing: 1px; color: #f0abfc; text-shadow: 0 0 20px rgba(240, 171, 252, 0.8); }
-header p { margin: 8px 0 0 0; color: #f5d0fe; font-size: 13px; text-transform: uppercase; letter-spacing: 3px; font-weight: bold; }
-.container { max-width: 480px; margin: auto; padding: 20px; position: relative; z-index: 10; }
-.card { background: rgba(24, 15, 48, 0.95); border: 2px solid #a855f7; border-radius: 18px; padding: 26px; margin-bottom: 20px; box-shadow: 0 10px 40px rgba(168, 85, 247, 0.25); backdrop-filter: blur(12px); }
-.card h2 { margin-top: 0; color: #e879f9; font-size: 20px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; margin-bottom: 6px; color: #e879f9; font-weight: 600; font-size: 14px; }
-.password-wrapper { position: relative; }
-.form-control { width: 100%; padding: 13px; padding-right: 45px; background: #0f0728; border: 1px solid #4c1d95; border-radius: 10px; color: white; font-size: 15px; transition: all 0.3s ease; }
-.form-control:focus { outline: none; border-color: #e879f9; box-shadow: 0 0 15px rgba(232, 121, 249, 0.4); }
-.toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 16px; color: #e879f9; }
-.btn { display: block; width: 100%; padding: 14px; background: linear-gradient(135deg, #9333ea, #c026d3); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 20px rgba(192, 38, 211, 0.5); transition: transform 0.2s; }
-.btn:active { transform: scale(0.98); }
-.error-msg { background: rgba(153, 27, 27, 0.5); border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 10px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 14px; }
-.switch-link { text-align: center; margin-top: 15px; font-size: 14px; color: #cbd5e1; }
-.switch-link a { color: #e879f9; text-decoration: none; font-weight: bold; }
-#violet-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.18; }
-</style>
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.createElement('canvas'); canvas.id = 'violet-canvas'; document.body.prepend(canvas);
-    const ctx = canvas.getContext('2d'); let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
-    const letters = '✨💜BUGNEW'; const size = 14; const cols = w / size; const drops = Array.from({length: cols}, () => 1);
-    setInterval(() => {
-        ctx.fillStyle = 'rgba(15, 7, 40, 0.08)'; ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#e879f9'; ctx.font = size + 'px monospace';
-        drops.forEach((y, i) => { ctx.fillText(letters.charAt(Math.floor(Math.random()*letters.length)), i*size, y*size); if(y*size > h && Math.random() > 0.975) drops[i]=0; drops[i]++; });
-    }, 30);
-});
-function togglePassword(id, btn) {
-    const input = document.getElementById(id);
-    input.type = input.type === "password" ? "text" : "password";
-    btn.textContent = input.type === "password" ? "👁️" : "👁️‍🗨️";
-}
-</script>
-"""
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     error, success = None, request.args.get("success")
     if request.method == "POST":
         u, p = request.form.get("username", "").strip(), request.form.get("password", "").strip()
-        if u in users_db and users_db[u] == p:
+        if u in users_db and users_db[u]["pass"] == p:
             session["user"] = u
             if u not in user_coins: user_coins[u] = 0
             return redirect(url_for("home"))
         error = "Tài khoản hoặc mật khẩu không chính xác!"
     return render_template_string("""
-    <!DOCTYPE html><html lang="vi"><head><title>ĐĂNG NHẬP - SHOP BUG NEW</title>{{ style | safe }}</head>
+    <!DOCTYPE html><html lang="vi"><head><title>ĐĂNG NHẬP - HỆ THỐNG SAO LƯU GMAIL</title>{{ style | safe }}</head>
     <body>
-    <header><h1>🛍️ SHOP BUG NEW</h1><p>CỔNG ĐĂNG NHẬP HỆ THỐNG</p></header>
-    <div class="container" style="margin-top: 40px;">
+    <header><h1>🔐 SHOP BUG NEW</h1><p>CỔNG ĐĂNG NHẬP BẢO MẬT</p></header>
+    <div class="container" style="margin-top: 30px;">
         <div class="card">
             <h2>🔑 ĐĂNG NHẬP</h2>
             {% if success %}<div class="success-msg">{{ success }}</div>{% endif %}
@@ -131,106 +106,124 @@ def login():
                         <button type="button" class="toggle-password" onclick="togglePassword('p1', this)">👁️</button>
                     </div>
                 </div>
-                <button type="submit" class="btn">🚀 ĐĂNG NHẬP NGAY</button>
+                <button type="submit" class="btn">🚀 TRUY CẬP HỆ THỐNG</button>
             </form>
-            <div class="switch-link">Chưa có tài khoản? <a href="/register">Đăng ký ngay</a></div>
+            <div class="switch-link">Chưa có tài khoản? <a href="/register">Đăng ký sao lưu ngay</a></div>
         </div>
-    </div></body></html>""", style=LOGIN_STYLE, success=success, error=error)
+    </div></body></html>""", style=AUTH_STYLE, success=success, error=error)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     error = None
     if request.method == "POST":
-        u, p = request.form.get("username", "").strip(), request.form.get("password", "").strip()
+        u = request.form.get("username", "").strip()
+        p = request.form.get("password", "").strip()
+        gmail = request.form.get("gmail", "").strip()
         if not u.isalpha(): error = "Tài khoản chỉ được chứa chữ cái, không số/ký tự đặc biệt!"
-        elif u in users_db: error = "Tài khoản đã tồn tại!"
+        elif u in users_db: error = "Tài khoản đã tồn tại trên hệ thống!"
         elif len(p) < 6: error = "Mật khẩu phải từ 6 ký tự trở lên!"
+        elif "@gmail.com" not in gmail: error = "Vui lòng nhập đúng định dạng Gmail để sao lưu tài khoản!"
         else:
-            users_db[u], user_coins[u] = p, 0
-            return redirect(url_for("login", success="Đăng ký thành công! Hãy đăng nhập."))
+            users_db[u] = {"pass": p, "gmail": gmail}
+            user_coins[u] = 0
+            return redirect(url_for("login", success="Đăng ký & Sao lưu Gmail thành công! Hãy đăng nhập."))
     return render_template_string("""
-    <!DOCTYPE html><html lang="vi"><head><title>ĐĂNG KÝ - SHOP BUG NEW</title>{{ style | safe }}</head>
+    <!DOCTYPE html><html lang="vi"><head><title>ĐĂNG KÝ & SAO LƯU GMAIL</title>{{ style | safe }}</head>
     <body>
-    <header><h1>🛍️ SHOP BUG NEW</h1><p>TẠO TÀI KHOẢN MỚI</p></header>
-    <div class="container" style="margin-top: 30px;">
+    <header><h1>🛡️ SHOP BUG NEW</h1><p>ĐĂNG KÝ & SAO LƯU GMAIL</p></header>
+    <div class="container" style="margin-top: 20px;">
         <div class="card">
-            <h2>➕ ĐĂNG KÝ</h2>
+            <h2>➕ TẠO TÀI KHOẢN MỚI</h2>
             {% if error %}<div class="error-msg">{{ error }}</div>{% endif %}
             <form method="POST">
                 <div class="form-group"><label>Tài khoản (Chỉ chữ cái):</label><input type="text" name="username" class="form-control" placeholder="Ví dụ: BugNew" required></div>
+                <div class="form-group"><label>Gmail sao lưu (Tránh mất acc):</label><input type="email" name="gmail" class="form-control" placeholder="vd: email@gmail.com" required></div>
                 <div class="form-group"><label>Mật khẩu:</label>
                     <div class="password-wrapper">
                         <input type="password" name="password" id="p2" class="form-control" placeholder="Ít nhất 6 ký tự..." required>
                         <button type="button" class="toggle-password" onclick="togglePassword('p2', this)">👁️</button>
                     </div>
                 </div>
-                <button type="submit" class="btn">✨ TẠO TÀI KHOẢN</button>
+                <button type="submit" class="btn">✨ XÁC NHẬN ĐĂNG KÝ</button>
             </form>
             <div class="switch-link">Đã có tài khoản? <a href="/login">Đăng nhập ngay</a></div>
         </div>
-    </div></body></html>""", style=REGISTER_STYLE, error=error)
+    </div></body></html>""", style=AUTH_STYLE, error=error)
 
 @app.route("/logout")
 def logout():
     session.pop("user", None)
     return redirect(url_for("login"))
-    # 3. GIAO DIỆN TRANG CHỦ & KHO ACC
+
+# GIAO DIỆN 2: TRANG CHỦ / SẢNH CHÍNH (Hiệu ứng 3D Rực Lửa phong cách Free Fire)
 HOME_STYLE = """
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #030712; color: #f3f4f6; scroll-behavior: smooth; overflow-x: hidden; }
-header { padding: 30px 15px; text-align: center; background: linear-gradient(135deg, #022c22, #047857, #0284c7); position: relative; z-index: 10; border-bottom: 3px solid #34d399; box-shadow: 0 10px 30px rgba(52, 211, 153, 0.3); }
-header h1 { margin: 0; font-size: 27px; color: #34d399; text-shadow: 0 0 20px rgba(52, 211, 153, 0.7); }
-header p { margin: 6px 0 0 0; color: #a7f3d0; font-size: 13px; letter-spacing: 1px; font-weight: bold; }
-.user-badge { position: absolute; top: 12px; right: 15px; background: rgba(2, 44, 34, 0.9); border: 1px solid #34d399; padding: 6px 12px; border-radius: 20px; font-size: 12px; backdrop-filter: blur(5px); }
-.user-badge a { color: #f87171; text-decoration: none; margin-left: 6px; font-weight: bold; }
-.blind-bag-btn-top { position: absolute; top: 12px; left: 15px; background: linear-gradient(135deg, #e11d48, #be185d); border: 1px solid #fb7185; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: white; text-decoration: none; font-weight: bold; box-shadow: 0 0 15px rgba(225, 29, 72, 0.6); }
+body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0c0502; color: #f3f4f6; scroll-behavior: smooth; overflow-x: hidden; }
+header { padding: 35px 15px; text-align: center; background: linear-gradient(135deg, #450a0a, #991b1b, #ea580c); position: relative; z-index: 10; border-bottom: 3px solid #fb923c; box-shadow: 0 15px 40px rgba(234, 88, 12, 0.4); }
+header h1 { margin: 0; font-size: 28px; color: #ffedd5; text-shadow: 0 0 25px rgba(255, 237, 213, 0.9); }
+header p { margin: 6px 0 0 0; color: #fed7aa; font-size: 13px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+.user-badge { position: absolute; top: 12px; right: 15px; background: rgba(69, 10, 10, 0.9); border: 1px solid #fb923c; padding: 6px 12px; border-radius: 20px; font-size: 12px; backdrop-filter: blur(5px); }
+.user-badge a { color: #fca5a5; text-decoration: none; margin-left: 6px; font-weight: bold; }
+.blind-bag-btn-top { position: absolute; top: 12px; left: 15px; background: linear-gradient(135deg, #7c2d12, #c2410c); border: 1px solid #fdba74; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: white; text-decoration: none; font-weight: bold; box-shadow: 0 0 15px rgba(194, 65, 12, 0.6); }
 .container { max-width: 650px; margin: auto; padding: 15px; position: relative; z-index: 10; }
-.card { background: rgba(6, 78, 59, 0.25); border: 2px solid #059669; border-radius: 16px; padding: 20px; margin-bottom: 18px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); }
-.card h2 { margin-top: 0; color: #34d399; font-size: 18px; border-bottom: 1px solid #065f46; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-.price { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; margin: 10px 0; background: #020617; border-radius: 10px; border: 1px solid #064e3b; transition: all 0.2s; }
-.price:hover { border-color: #34d399; box-shadow: 0 0 12px rgba(52, 211, 153, 0.3); }
-.money { color: #4ade80; font-weight: bold; font-size: 15px; text-shadow: 0 0 8px rgba(74, 222, 128, 0.4); }
-.nav-acc-btn { display: block; text-align: center; background: linear-gradient(135deg, #059669, #0284c7); color: white; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: bold; text-decoration: none; margin-bottom: 22px; box-shadow: 0 6px 20px rgba(5, 150, 105, 0.5); text-transform: uppercase; letter-spacing: 1px; }
-.acc-item { background: #020617; border-radius: 12px; padding: 15px; margin-bottom: 18px; border: 2px solid #047857; transition: transform 0.2s; }
-.acc-item:hover { transform: translateY(-2px); border-color: #34d399; box-shadow: 0 0 15px rgba(52, 211, 153, 0.25); }
-.acc-item img { width: 100%; border-radius: 10px; margin-bottom: 10px; border: 1px solid #065f46; }
-.button { display: block; text-align: center; margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #16a34a, #22c55e); color: #052e16; text-decoration: none; border-radius: 10px; font-weight: bold; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); text-transform: uppercase; font-size: 14px; }
-.contact { text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #064e3b, #0369a1); border-radius: 16px; border: 2px solid #34d399; box-shadow: 0 8px 25px rgba(3, 105, 161, 0.4); }
-footer { text-align: center; padding: 25px; color: #64748b; font-size: 13px; letter-spacing: 1px; }
-#green-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15; }
+.card { background: rgba(69, 10, 10, 0.35); border: 2px solid #ea580c; border-radius: 18px; padding: 22px; margin-bottom: 20px; box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6); backdrop-filter: blur(12px); }
+.card h2 { margin-top: 0; color: #fb923c; font-size: 19px; border-bottom: 1px solid #7c2d12; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+.price { display: flex; justify-content: space-between; align-items: center; padding: 13px 16px; margin: 11px 0; background: #180805; border-radius: 12px; border: 1px solid #7c2d12; transition: all 0.2s; }
+.price:hover { border-color: #fb923c; box-shadow: 0 0 15px rgba(251, 146, 60, 0.4); }
+.money { color: #facc15; font-weight: bold; font-size: 15px; text-shadow: 0 0 8px rgba(250, 204, 21, 0.5); }
+.nav-acc-btn { display: block; text-align: center; background: linear-gradient(135deg, #c2410c, #ea580c); color: white; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: bold; text-decoration: none; margin-bottom: 22px; box-shadow: 0 8px 25px rgba(234, 88, 12, 0.5); text-transform: uppercase; letter-spacing: 1px; }
+.acc-item { background: #180805; border-radius: 14px; padding: 16px; margin-bottom: 20px; border: 2px solid #9a3412; transition: transform 0.2s; }
+.acc-item:hover { transform: translateY(-2px); border-color: #fb923c; box-shadow: 0 0 20px rgba(251, 146, 60, 0.3); }
+.acc-item img { width: 100%; border-radius: 12px; margin-bottom: 12px; border: 1px solid #7c2d12; }
+.button { display: block; text-align: center; margin-top: 12px; padding: 13px; background: linear-gradient(135deg, #16a34a, #22c55e); color: #052e16; text-decoration: none; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4); text-transform: uppercase; font-size: 14px; }
+.contact { text-align: center; padding: 25px 20px; background: linear-gradient(135deg, #7c2d12, #9a3412); border-radius: 18px; border: 2px solid #fb923c; box-shadow: 0 10px 30px rgba(154, 52, 18, 0.4); }
+footer { text-align: center; padding: 25px; color: #78716c; font-size: 13px; letter-spacing: 1px; }
+#fire-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.25; }
 </style>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.createElement('canvas'); canvas.id = 'green-canvas'; document.body.prepend(canvas);
+    const canvas = document.createElement('canvas'); canvas.id = 'fire-canvas'; document.body.prepend(canvas);
     const ctx = canvas.getContext('2d'); let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
-    const symbols = '🔥👍💎BUGNEW'; const size = 16; const cols = w / size; const drops = Array.from({length: cols}, () => Math.floor(Math.random() * h));
-    setInterval(() => {
-        ctx.fillStyle = 'rgba(3, 7, 18, 0.1)'; ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#34d399'; ctx.font = size + 'px monospace';
-        drops.forEach((y, i) => { ctx.fillText(symbols.charAt(Math.floor(Math.random()*symbols.length)), i*size, y*size); if(y*size > h && Math.random() > 0.95) drops[i]=0; drops[i]++; });
-    }, 30);
+    window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+    const flames = Array.from({length: 60}, () => ({
+        x: Math.random() * w, y: h + Math.random() * 100,
+        vx: (Math.random() - 0.5) * 1.2, vy: -Math.random() * 3 - 1.5,
+        radius: Math.random() * 6 + 2, life: Math.random() * 80 + 20
+    }));
+    function animateFire() {
+        ctx.fillStyle = 'rgba(12, 5, 2, 0.2)'; ctx.fillRect(0, 0, w, h);
+        flames.forEach(f => {
+            f.x += f.vx; f.y += f.vy; f.life--;
+            ctx.fillStyle = f.life > 50 ? '#f97316' : (f.life > 20 ? '#ef4444' : '#facc15');
+            ctx.beginPath(); ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2); ctx.fill();
+            if (f.life <= 0 || f.y < 0) {
+                f.x = Math.random() * w; f.y = h + 20; f.life = Math.random() * 80 + 20;
+            }
+        });
+        requestAnimationFrame(animateFire);
+    }
+    animateFire();
 });
 </script>
 """
-
 @app.route("/")
 def home():
     if "user" not in session: return redirect(url_for("login"))
     u = session["user"]
     return render_template_string("""
-    <!DOCTYPE html><html lang="vi"><head><title>SHOP LIKES & KHO ACC FF - BUG NEW</title>{{ style | safe }}</head>
+    <!DOCTYPE html><html lang="vi"><head><title>TRANG CHỦ - KHO ACC & BẢNG GIÁ FF</title>{{ style | safe }}</head>
     <body>
     <header>
-        <a href="/blind-bag" class="blind-bag-btn-top">🎁 Túi Mù</a>
+        <a href="/blind-bag" class="blind-bag-btn-top">🎁 Túi Mù 3D</a>
         <div class="user-badge">👤 <b>{{ u }}</b> | <a href="/logout">Đăng xuất</a></div>
-        <h1>🛍️ SHOP BUG NEW</h1><p>🎮 DỊCH VỤ LIKES & KHO 10 ACC FREE FIRE</p>
+        <h1>🔥 SHOP BUG NEW</h1><p>🎮 KHO 10 ACC FREE FIRE & DỊCH VỤ LIKES</p>
     </header>
     <div class="container" style="margin-top: 15px;">
         <div class="card" style="text-align:center;">
             <h2>🔥 BẢNG GIÁ BUFF LIKES</h2>
-            <p style="color:#a7f3d0; font-size:13px; margin:5px 0 0 0;">Mỗi ngày tối đa 220 likes / ngày!</p>
+            <p style="color:#fed7aa; font-size:13px; margin:5px 0 0 0;">Mỗi ngày tối đa 220 likes / ngày!</p>
         </div>
         <div class="card">
             <h2>🏦 GIÁ CHUYỂN KHOẢN</h2>
@@ -265,62 +258,62 @@ def home():
             
             <div class="acc-item">
                 <img src="https://i.postimg.cc/rwBsvfSm/Screenshot-20261102-174419-com-dts-freefireth.jpg" alt="Acc 1">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #1</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 34<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">35.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #1</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 34<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#facc15;">35.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/3R7RwWS6/Screenshot-20261102-174720-com-dts-freefireth.jpg" alt="Acc 2">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #2</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 21<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">20.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #2</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 21<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#facc15;">20.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/3NxxgVHC/Screenshot-20261031-191554-com-dts-freefireth.jpg" alt="Acc 3">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #3</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 18<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">15.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #3</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 18<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#facc15;">15.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/rwfKhsvC/Screenshot-20261031-191554-com-dts-freefireth.jpg" alt="Acc 4">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #4</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 26<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">15.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #4</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 26<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#facc15;">15.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/28cDMWSj/Screenshot-20261031-191815-com-dts-freefireth.jpg" alt="Acc 5">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #5</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 9<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">36.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #5</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 9<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#facc15;">36.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/XqjRDNM8/Screenshot-20261031-191924-com-dts-freefireth.jpg" alt="Acc 6">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #6</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 13<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">5.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #6</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 13<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#facc15;">5.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/ncwy0t3T/Screenshot-20261031-192021-com-dts-freefireth.jpg" alt="Acc 7">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #7</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 22<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">20.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #7</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 22<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#facc15;">20.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/3w2z80YD/Screenshot-20261031-192143-com-dts-freefireth.jpg" alt="Acc 8">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #8</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 2<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">25.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #8</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 2<br>🔐 <b>Login:</b> Google<br>💰 <b>Giá:</b> <strong style="color:#facc15;">25.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/J4tgy2RD/Screenshot-20261031-192412-com-dts-freefireth.jpg" alt="Acc 9">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #9</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 28<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">30.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #9</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 28<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#facc15;">30.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
             <div class="acc-item">
                 <img src="https://i.postimg.cc/JhCd27ZP/Screenshot-20261031-192920-com-dts-freefireth.jpg" alt="Acc 10">
-                <h3 style="color:#34d399; margin:5px 0; font-size:16px;">🎮 Acc #10</h3>
-                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 14<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#4ade80;">10.000đ</strong></p>
+                <h3 style="color:#fb923c; margin:5px 0; font-size:16px;">🎮 Acc #10</h3>
+                <p style="color:#cbd5e1; font-size:13px; margin:5px 0; line-height:1.5;">⭐ <b>Level:</b> 14<br>🔐 <b>Login:</b> Facebook<br>💰 <b>Giá:</b> <strong style="color:#facc15;">10.000đ</strong></p>
                 <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank">🛒 MUA NGAY</a>
             </div>
         </div>
@@ -333,44 +326,55 @@ def home():
     </div>
     <footer>⚡ © 2026 BUG NEW ⚡</footer>
     </body></html>""", style=HOME_STYLE, u=u)
-    # 4. GIAO DIỆN TÚI MÙ
+    # GIAO DIỆN 3: TÚI MÙ (Hiệu ứng 3D Diamond / Box Particle, Hộp quà không gian 3D)
 BLIND_STYLE = """
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
 * { box-sizing: border-box; }
-body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a050f; color: #f3f4f6; scroll-behavior: smooth; overflow-x: hidden; }
-header { padding: 30px 15px; text-align: center; background: linear-gradient(135deg, #4c0519, #be123c, #e11d48); position: relative; z-index: 10; border-bottom: 3px solid #fb7185; box-shadow: 0 10px 30px rgba(251, 113, 133, 0.4); }
-header h1 { margin: 0; font-size: 27px; color: #ffe4e6; text-shadow: 0 0 20px rgba(255, 228, 230, 0.8); }
-header p { margin: 6px 0 0 0; color: #fecdd3; font-size: 13px; letter-spacing: 1px; font-weight: bold; }
-.back-btn { position: absolute; top: 12px; left: 15px; background: rgba(76, 5, 25, 0.9); border: 1px solid #fb7185; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #fb7185; text-decoration: none; font-weight: bold; }
-.user-badge { position: absolute; top: 12px; right: 15px; background: rgba(76, 5, 25, 0.9); border: 1px solid #fb7185; padding: 6px 12px; border-radius: 20px; font-size: 12px; backdrop-filter: blur(5px); color: #fecdd3; }
+body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0c021a; color: #f3f4f6; scroll-behavior: smooth; overflow-x: hidden; }
+header { padding: 35px 15px; text-align: center; background: linear-gradient(135deg, #3b0764, #7e22ce, #c026d3); position: relative; z-index: 10; border-bottom: 3px solid #f0abfc; box-shadow: 0 15px 40px rgba(192, 38, 211, 0.4); }
+header h1 { margin: 0; font-size: 28px; color: #fdf4ff; text-shadow: 0 0 25px rgba(253, 244, 255, 0.9); }
+header p { margin: 6px 0 0 0; color: #fae8ff; font-size: 13px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; }
+.back-btn { position: absolute; top: 12px; left: 15px; background: rgba(59, 7, 100, 0.9); border: 1px solid #f0abfc; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #f0abfc; text-decoration: none; font-weight: bold; }
+.user-badge { position: absolute; top: 12px; right: 15px; background: rgba(59, 7, 100, 0.9); border: 1px solid #f0abfc; padding: 6px 12px; border-radius: 20px; font-size: 12px; backdrop-filter: blur(5px); color: #fae8ff; }
 .container { max-width: 650px; margin: auto; padding: 15px; position: relative; z-index: 10; }
-.coin-box { background: linear-gradient(135deg, #78350f, #d97706); border: 2px solid #facc15; padding: 15px; border-radius: 14px; text-align: center; font-size: 17px; font-weight: bold; color: #fef08a; margin-bottom: 18px; box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); }
-.card { background: rgba(136, 19, 55, 0.2); border: 2px solid #e11d48; border-radius: 16px; padding: 20px; margin-bottom: 18px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); }
-.card h2 { margin-top: 0; color: #fb7185; font-size: 18px; border-bottom: 1px solid #881337; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-.btn-action { display: block; width: 100%; padding: 14px; background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; margin-top: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); text-transform: uppercase; }
-.bags-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 15px 0; }
-.bag-item { background: #020617; border: 2px dashed #fb7185; border-radius: 14px; padding: 22px 10px; text-align: center; cursor: pointer; width: 100%; transition: all 0.2s; }
-.bag-item:hover { background: #380414; border-color: #f43f5e; transform: scale(1.02); box-shadow: 0 0 20px rgba(244, 63, 94, 0.4); }
-.history-box { background: #020617; border: 1px solid #881337; border-radius: 10px; padding: 12px; max-height: 240px; overflow-y: auto; font-size: 13px; color: #cbd5e1; }
-.history-item { padding: 8px 0; border-bottom: 1px solid #4c0519; }
-.opening-modal { display: none; position: fixed; inset: 0; background: rgba(26, 5, 15, 0.92); backdrop-filter: blur(8px); z-index: 100; justify-content: center; align-items: center; flex-direction: column; text-align: center; padding: 25px; }
-@keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 20% { transform: translate(-3px, 0px) rotate(-5deg); } 40% { transform: translate(3px, 2px) rotate(5deg); } 60% { transform: translate(-1px, -1px) rotate(0deg); } 100% { transform: translate(0, 0) rotate(0deg); } }
-.shaking { animation: shake 0.4s infinite; }
-.button { display: block; text-align: center; margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #e11d48, #f43f5e); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; box-shadow: 0 4px 15px rgba(225, 29, 72, 0.5); text-transform: uppercase; font-size: 14px; }
-footer { text-align: center; padding: 25px; color: #64748b; font-size: 13px; letter-spacing: 1px; }
-#pink-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15; }
+.coin-box { background: linear-gradient(135deg, #713f12, #ca8a04); border: 2px solid #fde047; padding: 16px; border-radius: 16px; text-align: center; font-size: 17px; font-weight: bold; color: #fef08a; margin-bottom: 20px; box-shadow: 0 8px 25px rgba(202, 138, 4, 0.4); }
+.card { background: rgba(76, 29, 149, 0.25); border: 2px solid #9333ea; border-radius: 18px; padding: 22px; margin-bottom: 20px; box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6); backdrop-filter: blur(12px); }
+.card h2 { margin-top: 0; color: #f0abfc; font-size: 19px; border-bottom: 1px solid #581c87; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+.btn-action { display: block; width: 100%; padding: 15px; background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; border-radius: 14px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; margin-top: 10px; box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); text-transform: uppercase; letter-spacing: 1px; }
+.bags-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 15px 0; }
+.bag-item { background: #090d16; border: 2px solid #c026d3; border-radius: 16px; padding: 25px 10px; text-align: center; cursor: pointer; width: 100%; transition: all 0.25s; box-shadow: 0 5px 20px rgba(192, 38, 211, 0.25); }
+.bag-item:hover { background: #1e1b4b; border-color: #f43f5e; transform: translateY(-4px) scale(1.02); box-shadow: 0 0 25px rgba(244, 63, 94, 0.6); }
+.history-box { background: #090d16; border: 1px solid #581c87; border-radius: 12px; padding: 14px; max-height: 240px; overflow-y: auto; font-size: 13px; color: #e2e8f0; }
+.history-item { padding: 9px 0; border-bottom: 1px solid #3b0764; }
+.opening-modal { display: none; position: fixed; inset: 0; background: rgba(12, 2, 26, 0.94); backdrop-filter: blur(10px); z-index: 100; justify-content: center; align-items: center; flex-direction: column; text-align: center; padding: 25px; }
+@keyframes boxShake { 0% { transform: translate(1px, 1px) rotate(0deg) scale(1); } 20% { transform: translate(-4px, 2px) rotate(-8deg) scale(1.05); } 40% { transform: translate(4px, -2px) rotate(8deg) scale(1.05); } 60% { transform: translate(-2px, 2px) rotate(-4deg) scale(1.02); } 100% { transform: translate(0, 0) rotate(0deg) scale(1); } }
+.shaking { animation: boxShake 0.35s infinite; }
+.box-3d { width: 90px; height: 90px; margin: 0 auto 20px auto; background: linear-gradient(135deg, #e11d48, #9333ea); border-radius: 20px; box-shadow: 0 0 35px rgba(225, 29, 72, 0.8), inset 0 0 15px rgba(255,255,255,0.4); display: flex; align-items: center; justify-content: center; font-size: 42px; border: 2px solid #f0abfc; }
+.button { display: block; text-align: center; margin-top: 12px; padding: 13px; background: linear-gradient(135deg, #e11d48, #db2777); color: white; text-decoration: none; border-radius: 12px; font-weight: bold; box-shadow: 0 6px 20px rgba(225, 29, 72, 0.5); text-transform: uppercase; font-size: 14px; letter-spacing: 1px; }
+footer { text-align: center; padding: 25px; color: #a855f7; font-size: 13px; letter-spacing: 1px; }
+#diamond-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.25; }
 </style>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.createElement('canvas'); canvas.id = 'pink-canvas'; document.body.prepend(canvas);
+    const canvas = document.createElement('canvas'); canvas.id = 'diamond-canvas'; document.body.prepend(canvas);
     const ctx = canvas.getContext('2d'); let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
-    const symbols = '🎁📦🪙BUGNEW'; const size = 16; const cols = w / size; const drops = Array.from({length: cols}, () => Math.floor(Math.random() * h));
-    setInterval(() => {
-        ctx.fillStyle = 'rgba(26, 5, 15, 0.1)'; ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#fb7185'; ctx.font = size + 'px monospace';
-        drops.forEach((y, i) => { ctx.fillText(symbols.charAt(Math.floor(Math.random()*symbols.length)), i*size, y*size); if(y*size > h && Math.random() > 0.95) drops[i]=0; drops[i]++; });
-    }, 30);
+    window.addEventListener('resize', () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; });
+    const stars = Array.from({length: 50}, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        size: Math.random() * 2.5 + 1, speed: Math.random() * 0.8 + 0.2
+    }));
+    function animateStars() {
+        ctx.fillStyle = 'rgba(12, 2, 26, 0.25)'; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#f0abfc';
+        stars.forEach(s => {
+            s.y -= s.speed;
+            if (s.y < 0) s.y = h;
+            ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
+        });
+        requestAnimationFrame(animateStars);
+    }
+    animateStars();
 });
 
 function openBagAnimation(bagNum) {
@@ -381,7 +385,7 @@ function openBagAnimation(bagNum) {
     
     modal.style.display = 'flex';
     boxImg.classList.add('shaking');
-    rewardText.textContent = "🎁 Đang mở túi mù #" + bagNum + "...";
+    rewardText.textContent = "🎁 Đang giải mã hộp quà 3D #" + bagNum + "...";
     actionBtn.style.display = "none";
     
     setTimeout(() => {
@@ -393,13 +397,13 @@ function openBagAnimation(bagNum) {
         .then(res => res.json())
         .then(data => {
             if(data.status === 'success') {
-                rewardText.innerHTML = "🎉 Trúng thưởng: <b style='color:#facc15'>" + data.reward + "</b>";
+                rewardText.innerHTML = "🎉 Trúng thưởng: <b style='color:#fde047'>" + data.reward + "</b>";
             } else {
                 rewardText.innerHTML = "<b style='color:#f87171'>" + data.msg + "</b>";
             }
             actionBtn.style.display = "block";
         });
-    }, 1500);
+    }, 1600);
 }
 </script>
 """
@@ -422,12 +426,12 @@ def blind_bag():
             msg, msg_type = "🎉 Nhận thành công +200 xu!", "success"
 
     return render_template_string("""
-    <!DOCTYPE html><html lang="vi"><head><title>TÚI MÙ LIKES - BUG NEW</title>{{ style | safe }}</head>
+    <!DOCTYPE html><html lang="vi"><head><title>TÚI MÙ 3D - SHOP BUG NEW</title>{{ style | safe }}</head>
     <body>
     <header>
         <a href="/" class="back-btn">🏠 Trang Chủ</a>
         <div class="user-badge">👤 <b>{{ u }}</b></div>
-        <h1>🎁 TÚI MÙ LIKES FF</h1><p>SĂN NHÂN PHẨM MỖI NGÀY</p>
+        <h1>🎁 TÚI MÙ LIKES FF 3D</h1><p>SĂN QUÀ KHÔNG GIAN ẢO</p>
     </header>
     <div class="container" style="margin-top: 15px;">
         <div class="coin-box">💰 Tài khoản: <b>{{ u }}</b> | 🪙 Xu hiện có: <span style="color:#fef08a;">{{ coins }}</span> xu</div>
@@ -443,12 +447,28 @@ def blind_bag():
             </form>
         </div>
         <div class="card">
-            <h2>🛍️ CHỌN 1 TRONG 4 TÚI MÙ (75 XU)</h2>
+            <h2>💎 CHỌN 1 TRONG 4 HỘP QUÀ 3D (75 XU)</h2>
             <div class="bags-grid">
-                <button type="button" class="bag-item" onclick="openBagAnimation(1)"><span style="font-size:32px;">📦</span><h3 style="margin:8px 0 4px 0; color:#fb7185; font-size:15px;">Túi #1</h3><span style="font-size:12px; color:#cbd5e1;">Phí: 75 xu</span></button>
-                <button type="button" class="bag-item" onclick="openBagAnimation(2)"><span style="font-size:32px;">📦</span><h3 style="margin:8px 0 4px 0; color:#fb7185; font-size:15px;">Túi #2</h3><span style="font-size:12px; color:#cbd5e1;">Phí: 75 xu</span></button>
-                <button type="button" class="bag-item" onclick="openBagAnimation(3)"><span style="font-size:32px;">📦</span><h3 style="margin:8px 0 4px 0; color:#fb7185; font-size:15px;">Túi #3</h3><span style="font-size:12px; color:#cbd5e1;">Phí: 75 xu</span></button>
-                <button type="button" class="bag-item" onclick="openBagAnimation(4)"><span style="font-size:32px;">📦</span><h3 style="margin:8px 0 4px 0; color:#fb7185; font-size:15px;">Túi #4</h3><span style="font-size:12px; color:#cbd5e1;">Phí: 75 xu</span></button>
+                <div class="bag-item" onclick="openBagAnimation(1)">
+                    <div style="font-size:30px; margin-bottom:8px;">💎</div>
+                    <h3 style="margin:5px 0; color:#f0abfc; font-size:15px;">Hộp #1</h3>
+                    <span style="font-size:12px; color:#cbd5e1;">Phí: 75 xu</span>
+                </div>
+                <div class="bag-item" onclick="openBagAnimation(2)">
+                    <div style="font-size:30px; margin-bottom:8px;">💎</div>
+                    <h3 style="margin:5px 0; color:#f0abfc; font-size:15px;">Hộp #2</h3>
+                    <span style="font-size:12px; color:#cbd5e1;">Phí: 75 xu</span>
+                </div>
+                <div class="bag-item" onclick="openBagAnimation(3)">
+                    <div style="font-size:30px; margin-bottom:8px;">💎</div>
+                    <h3 style="margin:5px 0; color:#f0abfc; font-size:15px;">Hộp #3</h3>
+                    <span style="font-size:12px; color:#cbd5e1;">Phí: 75 xu</span>
+                </div>
+                <div class="bag-item" onclick="openBagAnimation(4)">
+                    <div style="font-size:30px; margin-bottom:8px;">💎</div>
+                    <h3 style="margin:5px 0; color:#f0abfc; font-size:15px;">Hộp #4</h3>
+                    <span style="font-size:12px; color:#cbd5e1;">Phí: 75 xu</span>
+                </div>
             </div>
         </div>
         <div class="card">
@@ -461,11 +481,11 @@ def blind_bag():
     </div>
 
     <div id="openingModal" class="opening-modal">
-        <div id="boxImg" style="font-size:80px; margin-bottom:15px;">📦</div>
-        <h2 id="rewardText" style="color:#fb7185; margin-bottom:20px; font-size:20px;">Đang mở túi mù...</h2>
+        <div class="box-3d" id="boxImg">💎</div>
+        <h2 id="rewardText" style="color:#f0abfc; margin-bottom:20px; font-size:20px;">Đang giải mã hộp quà 3D...</h2>
         <div id="actionBtn" style="display:none; width:100%; max-width:320px;">
             <a class="button" href="https://www.facebook.com/share/1DWZpYDE4C/" target="_blank" style="margin-bottom:12px;">💬 GỬI ẢNH CHO ADMIN QUA FACEBOOK</a>
-            <button onclick="location.reload()" style="background:#334155; color:white; border:none; padding:12px; width:100%; border-radius:10px; cursor:pointer; font-weight:bold; text-transform:uppercase;">TIẾP TỤC CHƠI</button>
+            <button onclick="location.reload()" style="background:#3b0764; color:white; border:2px solid #f0abfc; padding:12px; width:100%; border-radius:12px; cursor:pointer; font-weight:bold; text-transform:uppercase;">TIẾP TỤC CHƠI</button>
         </div>
     </div>
 
@@ -484,7 +504,7 @@ def open_bag_api():
     weights = [25, 24, 17, 13, 9, 6, 4, 2]
     won = random.choices(rewards, weights=weights, k=1)[0]
     
-    global_history.insert(0, (u, f"[{datetime.now().strftime('%H:%M %d/%m')}] 🛍️ Mở túi (-75 xu) - Trúng: {won}"))
+    global_history.insert(0, (u, f"[{datetime.now().strftime('%H:%M %d/%m')}] 💎 Mở hộp 3D (-75 xu) - Trúng: {won}"))
     return {"status": "success", "reward": won}
 
 if __name__ == "__main__":
