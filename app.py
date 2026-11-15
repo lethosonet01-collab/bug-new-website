@@ -9,7 +9,6 @@ app.secret_key = 'bug_new_secret_key_secure_2026'
 
 DATA_FILE = 'users_data.json'
 
-# Hàm đọc dữ liệu từ file JSON vĩnh viễn (Chống mất tài khoản khi server ngủ đông)
 def load_data():
     if not os.path.exists(DATA_FILE):
         return {"users": {}, "history": []}
@@ -19,11 +18,10 @@ def load_data():
     except:
         return {"users": {}, "history": []}
 
-# Hàm ghi dữ liệu vào file JSON vĩnh viễn
 def save_data(data):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
-        # Danh sách 10 kho Acc Free Fire chuẩn chỉnh
+
 ACC_LIST = [
     {"id": 1, "name": "Acc FF VIP #1", "level": "10%", "price": "4.400đ", "img": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=300&q=80"},
     {"id": 2, "name": "Acc FF VIP #2", "level": "10%", "price": "4.400đ", "img": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=300&q=80"},
@@ -37,13 +35,13 @@ ACC_LIST = [
     {"id": 10, "name": "Acc FF VIP #10", "level": "10%", "price": "11.000đ", "img": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&q=80"}
 ]
 
-# Bảng giá chuẩn cập nhật mới
 PRICING_CARDS = [
     {"likes": "220 Likes", "price": "4.400đ"},
     {"likes": "1.100 Likes", "price": "11.000đ"},
     {"likes": "2.200 Likes", "price": "22.000đ"},
     {"likes": "4.500 Likes", "price": "45.000đ"}
 ]
+
 @app.route('/auth', methods=['GET', 'POST'])
 def auth_page():
     error = None
@@ -111,7 +109,7 @@ def auth_page():
     </head>
     <body>
         <div class="auth-container">
-            <h2>⚡ BUG NEW ⚡</h2>
+            <h2>🔰 BUG NEW 🔰</h2>
             <div class="tabs">
                 <div class="tab active" onclick="switchTab('login')">ĐĂNG NHẬP</div>
                 <div class="tab" onclick="switchTab('register')">ĐĂNG KÝ</div>
@@ -144,8 +142,7 @@ def auth_page():
     </html>
     """
     return render_template_string(html_auth, error=error, success=success)
-
-@app.route('/')
+    @app.route('/')
 def index():
     if 'username' not in session:
         return redirect(url_for('auth_page'))
@@ -228,7 +225,8 @@ def index():
     </html>
     """
     return render_template_string(html_template, username=username, user_info=user_info, pricing_cards=PRICING_CARDS, acc_list=ACC_LIST)
-    @app.route('/blind_bag', methods=['GET', 'POST'])
+
+@app.route('/blind_bag', methods=['GET', 'POST'])
 def blind_bag():
     if 'username' not in session:
         return redirect(url_for('auth_page'))
@@ -284,7 +282,6 @@ def blind_bag():
             .container { max-width: 800px; margin: 20px auto; padding: 0 15px; text-align: center; }
             .section-title { font-size: 1.5rem; color: var(--neon-pink); margin: 20px 0; text-shadow: 0 0 15px var(--neon-pink); text-transform: uppercase; }
             .msg-box { background: rgba(244, 63, 94, 0.15); border: 1px solid var(--neon-pink); color: #fecdd3; padding: 12px; border-radius: 8px; font-weight: 700; margin-bottom: 20px; box-shadow: 0 0 15px rgba(244,63,94,0.2); }
-            /* Hộp quà đồ họa CSS 3D Thay thế hoàn toàn Emoji */
             .css-gift-box { width: 140px; height: 140px; margin: 30px auto; background: linear-gradient(135deg, #f43f5e, #881337); border: 2px solid var(--neon-cyan); border-radius: 16px; position: relative; box-shadow: 0 0 25px rgba(244, 63, 94, 0.6), inset 0 0 15px rgba(56, 189, 248, 0.5); display: flex; justify-content: center; align-items: center; cursor: pointer; animation: floatBox 3s ease-in-out infinite; transition: transform 0.3s ease; }
             .css-gift-box:hover { transform: scale(1.08) rotate(3deg); }
             .css-gift-box::before { content: ""; position: absolute; width: 20px; height: 100%; background: var(--neon-cyan); box-shadow: 0 0 10px var(--neon-cyan); }
@@ -344,4 +341,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-    
